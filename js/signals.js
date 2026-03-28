@@ -294,7 +294,16 @@ async function generateSignal(symbol, ctx = {}) {
     }
   }
 
-  const composite = (techScore * 0.35) + (textSentiment.avg * 0.35) + (macroScore * 0.15) + (Math.random() * 15);
+  // 4. Calculate Component Scores
+  const techScore = quote?.changePct ? (quote.changePct * 10) : 0;
+  const textSentiment = aggregateSentiment(headlines);
+  
+  // 5. Final Composite (Patrio-Metric Scoring)
+  const composite = (techScore * CONFIG.WEIGHTS.technical) + 
+                    (textSentiment.avg * CONFIG.WEIGHTS.sentiment) + 
+                    (macroScore * CONFIG.WEIGHTS.macro) + 
+                    (Math.random() * 15);
+                    
   const compositeNorm = Math.max(-100, Math.min(100, composite));
 
   let action, emoji;
@@ -319,6 +328,8 @@ async function generateSignal(symbol, ctx = {}) {
 // Export for global use in app.js
 window.SignalEngine = {
   generateSignal,
+  scoreText,
+  fetchNewsFromRSS: parseRSS,
   fetchNews: async (symbol = '') => {
     const cKey = `av:news:${symbol || 'global'}`;
     const hit = cache.get(cKey);

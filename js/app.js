@@ -13,7 +13,12 @@ const AppState = {
     riskAccepted: false,
     scanProgress: 0,
     countdownInterval: null,
-    matrixInterval: null
+    matrixInterval: null,
+    rssFeeds: [
+        'https://rss.politico.com/donald-trump.xml',
+        'https://cointelegraph.com/rss',
+        'https://goldbroker.com/news.rss'
+    ]
 };
 
 // View Management System (ADDED FOR RESPONSIVE NAVIGATION)
@@ -182,29 +187,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderSignals(signals) {
-        signalsFeed.innerHTML = signals.map((sig, i) => `
-            <div class="signal-card glass-panel gold-border slide-up" style="animation-delay: ${i * 0.1}s">
-                <div class="signal-header">
-                    <div class="symbol-info">
-                        <span class="symbol-box">${sig.action}</span>
-                        <h3 class="symbol-name">${sig.symbol}</h3>
+        signalsFeed.innerHTML = signals.map((sig, i) => {
+            const timeAgo = getRelativeTime(new Date()); // Realistic mock for now, or use actual timestamp if available
+            return `
+                <div class="signal-card glass-panel gold-border slide-up" style="animation-delay: ${i * 0.1}s">
+                    <div class="signal-header">
+                        <div class="symbol-info">
+                            <span class="symbol-box ${sig.action.includes('SHORT') ? 'bg-red' : ''}">${sig.action}</span>
+                            <h3 class="symbol-name">${sig.symbol}</h3>
+                        </div>
+                        <div class="price-info">
+                            <span class="text-gold" style="font-weight: 900;">$${sig.price}</span>
+                        </div>
                     </div>
-                    <div class="price-info">
-                        <span class="text-gold" style="font-weight: 900;">$${sig.price}</span>
+                    <div class="confidence-meter">
+                        <div class="confidence-label">
+                            <span>CONFIDENCE: ${sig.confidence}%</span>
+                            <span class="${sig.changePct >= 0 ? 'text-green' : 'text-red'}">${sig.changePct >= 0 ? '+' : ''}${sig.changePct}%</span>
+                        </div>
+                        <div class="meter-outer">
+                            <div class="meter-inner" style="width: ${sig.confidence}%"></div>
+                        </div>
+                    </div>
+                    <div class="signal-meta">
+                        <small>Intel: ${timeAgo} | Alpha: Secured</small>
                     </div>
                 </div>
-                <div class="confidence-meter">
-                    <div class="confidence-label">
-                        <span>CONFIDENCE: ${sig.confidence}%</span>
-                        <span class="${sig.changePct >= 0 ? 'text-green' : 'text-red'}">${sig.changePct >= 0 ? '+' : ''}${sig.changePct}%</span>
-                    </div>
-                    <div class="meter-outer">
-                        <div class="meter-inner" style="width: ${sig.confidence}%"></div>
-                    </div>
-                </div>
-                <p class="signal-message">${sig.message}</p>
-            </div>
-        `).join('');
+            `;
+        }).join('');
+    }
+
+    function getRelativeTime(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        if (seconds < 60) return 'Just Now';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        return date.toLocaleDateString();
     }
 
     function updateHeatmap(signals) {
@@ -291,29 +311,49 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadRealNews() {
         newsFeed.innerHTML = '<div class="loader-placeholder">FETCHING INTELLIGENCE...</div>';
         try {
-            const news = await window.SignalEngine.fetchNews();
+            // Aggregate RSS feeds
+            let allItems = [];
+            for (const url of AppState.rssFeeds) {
+                const items = await window.SignalEngine.fetchNewsFromRSS(url);
+                allItems = [...allItems, ...items];
+            }
+
+            // Shuffle or sort by date if available
+            allItems = allItems.slice(0, 15); // Top 15
+
             const bullCount = document.getElementById('bull-count');
             const bearCount = document.getElementById('bear-count');
+            const moodLabel = document.getElementById('mood-label');
 
             let bulls = 0, bears = 0;
-            newsFeed.innerHTML = news.map(item => {
-                if (item.sentiment > 0.1) bulls++;
-                if (item.sentiment < -0.1) bears++;
+            newsFeed.innerHTML = allItems.map(item => {
+                const sentiment = window.SignalEngine.scoreText(item.title);
+                if (sentiment > 5) bulls++;
+                if (sentiment < -5) bears++;
+
                 return `
                     <div class="news-item glass-panel">
-                        <a href="${item.url}" target="_blank" class="news-title">${item.title}</a>
+                        <a href="${item.link}" target="_blank" class="news-title">${item.title}</a>
                         <div class="news-meta">
-                            <span>RELEVANCE: ${Math.round(item.relevance * 100)}%</span>
-                            <span class="${item.sentiment > 0 ? 'text-green' : 'text-red'}">SENTIMENT: ${item.sentiment}</span>
+                            <span>SOURCE: PATRIOT INTEL</span>
+                            <span class="${sentiment > 0 ? 'text-green' : (sentiment < 0 ? 'text-red' : '')}">SENTIMENT: ${sentiment > 0 ? '+' : ''}${sentiment}</span>
                         </div>
                     </div>
                 `;
             }).join('');
 
-            bullCount.textContent = bulls;
-            bearCount.textContent = bears;
+            if (bullCount) bullCount.textContent = bulls;
+            if (bearCount) bearCount.textContent = bears;
+            
+            // Adjust Mood Label
+            if (moodLabel) {
+                const diff = bulls - bears;
+                moodLabel.textContent = diff > 5 ? 'EXTREME BULLISH' : (diff > 0 ? 'BULLISH' : (diff < -5 ? 'BEARISH' : 'NEUTRAL'));
+            }
+
         } catch (err) {
-            newsFeed.innerHTML = '<div class="no-data">NEWS FEED OFFLINE.</div>';
+            console.error("News Load Error:", err);
+            newsFeed.innerHTML = '<div class="no-data">PATRIOT NEWS OFFLINE. CHECK CONNECTION.</div>';
         }
     }
 

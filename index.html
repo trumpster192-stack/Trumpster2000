@@ -39,7 +39,10 @@
         <header class="app-header glass-panel">
             <div class="logo-container">
                 <img src="assets/logo.png" alt="Trumpster 2000" class="app-logo">
-                <span class="text-gradient">TRUMPSTER <span class="text-gold">2000</span></span>
+                <div class="logo-text">
+                    <span class="text-gradient">TRUMPSTER <span class="text-gold">2000</span></span>
+                    <button class="hero-cta gold-button" onclick="showView('plans')">GET ALPHA NOW</button>
+                </div>
             </div>
             <div class="header-center">
               <div class="scan-bar">
@@ -49,9 +52,19 @@
             </div>
             <div class="market-status glass-panel">
                 <div class="status-dot pulse-green"></div>
-                <span class="status-label">AG: <span class="text-gold" id="market-status">OPTIMIZED</span></span>
+                <span class="status-label">ALPHA INTEL: <span class="text-gold" id="market-status">SECURED</span></span>
             </div>
         </header>
+        
+        <!-- Sticky Navigation Dock (Desktop/Mobile) -->
+        <nav class="sticky-nav glass-panel">
+            <div class="nav-links">
+                <a href="#signals-feed"><i data-lucide="radio"></i> SIGNALS</a>
+                <a href="#tradingview-widget"><i data-lucide="candlestick-chart"></i> CHARTS</a>
+                <a href="#sentiment-dashboard"><i data-lucide="mic"></i> SPEECH</a>
+                <a href="#view-plans"><i data-lucide="crown"></i> PRO TIER</a>
+            </div>
+        </nav>
 
         <!-- VIEW: DASHBOARD (Main View) -->
         <main id="view-dashboard" class="dashboard-view">
@@ -326,6 +339,10 @@
                         <i data-lucide="mic"></i>
                         SENTIMENT INTELLIGENCE ENGINE
                     </h2>
+                    <div class="sentiment-legend glass-panel">
+                        <i data-lucide="info"></i>
+                        <span><strong>HOW TO PROFIT:</strong> Bullish Sentiment > 0.5 correlates to a 78% probability of a Patriot Rally. Front-run the news by following the mood needle.</span>
+                    </div>
                 </div>
                 <div class="sentiment-dashboard">
                     <div class="sentiment-meter-container">
@@ -473,7 +490,7 @@
                                 <li><i data-lucide="check" class="text-green"></i> 5 Market Scans/Day</li>
                                 <li><i data-lucide="check" class="text-green"></i> Basic Charts</li>
                                 <li><i data-lucide="check" class="text-green"></i> 24h Delayed Data</li>
-                                <li><i data-lucide="x" class="text-red"></i> Real-time Signals</li>
+                                <li><i data-lucide="x" class="text-red"></i> Restricted Signals</li>
                                 <li><i data-lucide="x" class="text-red"></i> FRED Macro Data</li>
                                 <li><i data-lucide="x" class="text-red"></i> API Access</li>
                             </ul>
@@ -657,8 +674,8 @@
         <footer class="legal-footer flag-footer">
             <div class="flag-stars">★ ★ ★ ★ ★</div>
             <div class="footer-content">
-                <p>"For entertainment and educational purposes only. Not financial advice."</p>
-                <p>Data: Alpha Vantage, Finnhub, CoinGecko | &copy; 2026 Trumpster 2000</p>
+                <div class="disclaimer-bold">⚠️ DISCLAIMER: FOR ENTERTAINMENT AND EDUCATIONAL PURPOSES ONLY. NOT FINANCIAL ADVICE. THE "ACCURACY" SHOWN IS SATIRICAL BASED ON THE TRUMPSTER ENGINE PERFORMANCE.</div>
+                <p>Data: Alpha Vantage, Finnhub, Polygon, FRED | &copy; 2026 Trumpster 2000</p>
             </div>
         </footer>
     </div>

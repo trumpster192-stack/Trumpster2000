@@ -14,6 +14,34 @@
   overflow-x: hidden;
 }
 
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-cta {
+  padding: 4px 12px !important;
+  font-size: 0.6rem !important;
+  max-width: 120px;
+}
+
+.sentiment-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 0.75rem;
+  background: rgba(255, 215, 0, 0.05);
+  border-color: var(--gold-secondary);
+}
+
+.sentiment-legend i {
+  color: var(--gold-primary);
+  flex-shrink: 0;
+}
+
 .dashboard-grid {
   display: flex;
   flex-direction: column;
@@ -123,8 +151,78 @@
 }
 
 /* -----------------------------------------------------------
-   4. MATRIX TERMINAL (Mobile Optimized)
+   STICKY NAVIGATION DOCK
    ----------------------------------------------------------- */
+.sticky-nav {
+  position: sticky;
+  top: 70px; /* Below app-header */
+  z-index: 99;
+  background: rgba(7, 7, 28, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--gold-secondary);
+  padding: 10px 0;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.nav-links a {
+  color: var(--gold-secondary);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--gold-primary);
+  background: rgba(255, 215, 0, 0.1);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.nav-links a i {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    gap: 10px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-links a span {
+    display: none; /* Icon only on very small screens if needed, but let's keep text for now */
+  }
+}
+
+.disclaimer-bold {
+  color: var(--gold-primary);
+  background: rgba(178, 34, 52, 0.2);
+  padding: 15px;
+  border: 1px solid var(--gold-secondary);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
 .matrix-panel {
   background: rgba(0, 0, 0, 0.8) !important;
   border-color: #00FF41 !important;
