@@ -25,5 +25,6 @@ if (window.TRUMPSTER_CONFIG.SUPABASE_URL && window.TRUMPSTER_CONFIG.SUPABASE_ANO
     );
     console.log("MAGA: Supabase Telemetry Connected.");
 } else {
-    console.warn("MAGA: Supabase Keys missing. Trade history will be local only.");
+    const msg = "MAGA: Supabase Keys missing. Trade history NOT CONNECTED. (Set SUPABASE_URL & SUPABASE_ANON_KEY in Vercel settings!)";
+    console.warn(msg);
 }

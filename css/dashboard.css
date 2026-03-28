@@ -421,9 +421,50 @@
   transform: scale(1.02);
 }
 
-/* Mobile */
-@media (max-width: 1000px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
-  .dashboard-sidebar { display: none; }
-  .sentiment-dashboard { grid-template-columns: 1fr; }
+/* Mobile & Tablet Optimizations (PATRIOT EDITION) */
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-sidebar {
+    order: 2; /* Sidebar (Countdown/Terminal) moves below signals */
+    display: flex; /* Sidebar elements stay, but vertical */
+  }
+  .signals-container {
+    order: 1;
+  }
+  .sentiment-dashboard {
+    grid-template-columns: 1fr;
+  }
+  .news-list {
+    max-height: 400px;
+  }
+  .app-header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 15px;
+  }
+  .header-center {
+    width: 100%;
+    order: 3;
+    padding: 10px 0;
+  }
+  .scan-bar {
+    max-width: 100%;
+  }
+  .dashboard-view {
+    padding: 0 10px 100px;
+  }
+  .chart-box {
+    height: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .logo-container span { font-size: 0.9rem; }
+  .status-label { display: none; }
+  .stat-card .val { font-size: 1.1rem; }
+  .symbol-name { font-size: 1rem; }
+  .price-info span { font-size: 0.9rem; }
+  .history-item { flex-direction: column; gap: 5px; text-align: left; }
 }

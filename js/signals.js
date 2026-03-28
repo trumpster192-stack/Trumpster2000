@@ -251,9 +251,9 @@ async function generateSignal(symbol, ctx = {}) {
     const coinMap = { BTC:'bitcoin', ETH:'ethereum', SOL:'solana', DJT:'trump-media' };
     try { quote = await fetchCryptoPrice(coinMap[cleanSym] || cleanSym.toLowerCase()); } catch (_) {}
   } else {
-    try { quote = await fetchPolygonQuote(symbol); } catch (_) {}
-    if (!quote?.price) { try { quote = await fetchFinnhubQuote(symbol); } catch (_) {} }
+    try { quote = await fetchFinnhubQuote(symbol); } catch (_) {}
     if (!quote?.price) { try { quote = await fetchAlphaVantageQuote(symbol); } catch (_) {} }
+    if (!quote?.price) { try { quote = await fetchPolygonQuote(symbol); } catch (_) {} }
   }
 
   // 2. Fetch Real News Sentiment
