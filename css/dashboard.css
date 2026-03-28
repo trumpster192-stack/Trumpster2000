@@ -31,6 +31,37 @@
 }
 
 /* Matrix Terminal Effect */
+/* Scanning Progress Bar */
+.progress-bar-container {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid var(--gold-secondary);
+  background: rgba(0,0,0,0.4);
+}
+
+.progress-label {
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  color: var(--gold-primary);
+}
+
+.progress-outer {
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--patriot-red), var(--gold-primary), var(--patriot-blue));
+  box-shadow: 0 0 10px var(--gold-primary);
+  transition: width 0.4s ease;
+}
+
 .matrix-panel {
   background: rgba(0, 0, 0, 0.8) !important;
   border-color: #00FF41 !important;
@@ -181,6 +212,7 @@
 .symbol-tabs {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .sym-tab {
@@ -193,6 +225,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   transition: all 0.2s;
+  margin-bottom: 5px;
 }
 
 .sym-tab.active {
@@ -350,121 +383,133 @@
   font-weight: 700;
 }
 
+/* Mobile Nav Enhancement */
+.patriot-border-glow {
+  border-top: 3px solid var(--patriot-blue) !important;
+  box-shadow: 0 -5px 25px rgba(60, 59, 110, 0.4);
+}
+
+.nav-icon-box {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  transition: all 0.3s;
+  color: var(--gold-secondary);
+}
+
+.nav-item.active .nav-icon-box {
+  background: var(--gold-primary);
+  color: #000;
+  box-shadow: var(--gold-glow);
+  transform: translateY(-8px);
+}
+
+.nav-item span {
+  font-size: 0.6rem !important;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #888;
+}
+
+.nav-item.active span {
+  color: var(--gold-primary);
+  text-shadow: var(--gold-text-glow);
+}
+
+/* Subscription Plans Modal */
+.plans-container {
+  max-width: 1000px !important;
+  padding: 50px 30px !important;
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-top: 40px;
+}
+
+.plan-card {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s;
+}
+
+.plan-card:hover { transform: translateY(-5px); }
+
+.featured-plan {
+  border: 2px solid var(--gold-primary);
+  box-shadow: var(--gold-glow);
+  transform: scale(1.05);
+}
+
+.featured-plan:hover { transform: scale(1.07) translateY(-5px); }
+
+.plan-card h3 { font-size: 1.1rem; color: var(--gold-primary); }
+
+.plan-card .price { font-size: 2.2rem; font-family: 'Orbitron', sans-serif; font-weight: 900; }
+.plan-card .price span { font-size: 0.8rem; color: #888; }
+
+.plan-card ul { list-style: none; text-align: left; margin: 10px 0; }
+.plan-card li { margin-bottom: 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 10px; }
+.plan-card .plan-btn { width: 100%; margin-top: auto; }
+
+.ribbon {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--patriot-red);
+  color: #fff;
+  padding: 4px 15px;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 900;
+  z-index: 5;
+}
+
+/* Mobile & Tablet Optimizations */
+@media (max-width: 1100px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .dashboard-sidebar { order: 2; display: flex; flex-direction: column; gap: 20px; }
+  .signals-container { order: 1; }
+  .plans-grid { grid-template-columns: 1fr; gap: 30px; }
+  .featured-plan { transform: scale(1); }
+  .featured-plan:hover { transform: scale(1.02); }
+}
+
+@media (max-width: 600px) {
+  .app-header { flex-direction: column; gap: 15px; padding: 15px; height: auto; }
+  .logo-container span { font-size: 0.8rem; }
+  .header-center { width: 100%; order: 3; }
+  .scan-bar { max-width: 100%; }
+  .dashboard-view { padding: 0 10px 120px; }
+  .chart-box { height: 350px; }
+  .heat-cell { min-width: 80px; min-height: 60px; font-size: 0.6rem; }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--gold-secondary); border-radius: 2px; }
-
-/* Gear View / Settings Enhancements */
-.settings-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  max-width: 600px;
-  margin: 30px auto;
-}
-
-.setting-item {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.setting-item label {
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: var(--gold-secondary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.glass-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  border-radius: 6px;
-  padding: 12px 15px;
-  color: #fff;
-  font-family: inherit;
-  font-size: 0.9rem;
-}
-
-.tier-badge {
-  display: inline-block;
-  padding: 10px 20px;
-  font-weight: 900;
-  color: var(--gold-primary);
-  background: rgba(255, 215, 0, 0.05);
-  text-align: center;
-  border-radius: 4px;
-}
-
-.button-group {
-  display: flex;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.red-button {
-  background: var(--patriot-red);
-  border: none;
-  padding: 14px 28px;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 900;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.red-button:hover {
-  box-shadow: 0 0 15px var(--patriot-red);
-  transform: scale(1.02);
-}
-
-/* Mobile & Tablet Optimizations (PATRIOT EDITION) */
-@media (max-width: 1100px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .dashboard-sidebar {
-    order: 2; /* Sidebar (Countdown/Terminal) moves below signals */
-    display: flex; /* Sidebar elements stay, but vertical */
-  }
-  .signals-container {
-    order: 1;
-  }
-  .sentiment-dashboard {
-    grid-template-columns: 1fr;
-  }
-  .news-list {
-    max-height: 400px;
-  }
-  .app-header {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 15px;
-  }
-  .header-center {
-    width: 100%;
-    order: 3;
-    padding: 10px 0;
-  }
-  .scan-bar {
-    max-width: 100%;
-  }
-  .dashboard-view {
-    padding: 0 10px 100px;
-  }
-  .chart-box {
-    height: 400px;
-  }
-}
-
-@media (max-width: 600px) {
-  .logo-container span { font-size: 0.9rem; }
-  .status-label { display: none; }
-  .stat-card .val { font-size: 1.1rem; }
-  .symbol-name { font-size: 1rem; }
-  .price-info span { font-size: 0.9rem; }
-  .history-item { flex-direction: column; gap: 5px; text-align: left; }
-}

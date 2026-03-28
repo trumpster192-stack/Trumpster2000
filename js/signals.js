@@ -10,7 +10,7 @@
 const CONFIG = {
   ALPHA_VANTAGE_KEY : window.TRUMPSTER_CONFIG?.VANTAGE_KEY || '0AQFRLJK08VO4WZV', 
   FINNHUB_KEY       : window.TRUMPSTER_CONFIG?.FINNHUB_KEY || 'd73vkbhr01qno4pvskt0d73vkbhr01qno4pvsktg',
-  FRED_KEY          : '48bf00ac5df3a0548ae2df72648a0de8',
+  FRED_KEY          : window.TRUMPSTER_CONFIG?.FRED_KEY || '48bf00ac5df3a0548ae2df72648a0de8',
   POLYGON_KEY       : window.TRUMPSTER_CONFIG?.POLYGON_KEY || 'a8aMBxrSJnA5JypSfnfXzWHYj57X3AGe',
 
   CACHE_TTL_QUOTES  : 60,
@@ -199,6 +199,28 @@ async function fetchPolygonQuote(symbol) {
   } catch (err) { console.warn('Poly Fail:', err); return null; }
 }
 
+async function fetchFredMacro(seriesId = 'FEDFUNDS') {
+  if (!CONFIG.FRED_KEY || CONFIG.FRED_KEY === '__FRED_KEY__') return null;
+  const cKey = `fred:macro:${seriesId}`;
+  const hit = cache.get(cKey);
+  if (hit) return hit;
+  
+  const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${CONFIG.FRED_KEY}&file_type=json&sort_order=desc&limit=2`;
+  try {
+    const data = await fetchJSON(url);
+    const obs = data.observations || [];
+    if (obs.length < 2) return null;
+    
+    const current = parseFloat(obs[0].value);
+    const previous = parseFloat(obs[1].value);
+    const change = current - previous;
+    
+    const result = { seriesId, current, previous, change, source: 'fred' };
+    cache.set(cKey, result, CONFIG.CACHE_TTL_MACRO);
+    return result;
+  } catch (err) { console.warn('FRED Fail:', err); return null; }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // MODULE 2 — SENTIMENT & SCORING (Direct Port of Logic)
 // ═══════════════════════════════════════════════════════════════
@@ -262,10 +284,17 @@ async function generateSignal(symbol, ctx = {}) {
     headlines = await window.SignalEngine.fetchNews(symbol);
   }
 
-  const textSentiment = aggregateSentiment(headlines);
-  const techScore = quote?.changePct ? quote.changePct * 5 : 0; // Simplified technical score
+  // 3. Macro Logic (Incorporate FRED FRED_KEY)
+  let macroScore = 0;
+  if (CONFIG.FRED_KEY) {
+    const fedFunds = await fetchFredMacro('FEDFUNDS');
+    if (fedFunds) {
+      // Rates rising = Bearish for stocks (usually)
+      macroScore = fedFunds.change > 0 ? -15 : (fedFunds.change < 0 ? 15 : 0);
+    }
+  }
 
-  const composite = techScore * 0.4 + textSentiment.avg * 0.4 + (Math.random() * 20); // 20% random flow
+  const composite = (techScore * 0.35) + (textSentiment.avg * 0.35) + (macroScore * 0.15) + (Math.random() * 15);
   const compositeNorm = Math.max(-100, Math.min(100, composite));
 
   let action, emoji;
@@ -316,13 +345,15 @@ window.SignalEngine = {
       return [];
     }
   },
-  scanWatchlist: async (symbols) => {
+  scanWatchlist: async (symbols, onProgress) => {
     const globalNews = await window.SignalEngine.fetchNews();
     const signals = [];
+    let processed = 0;
     for (const sym of symbols) {
-      // Find headlines relevant to this symbol from global news or specific fetch
       const relevant = globalNews.filter(n => n.title.includes(sym) || n.summary.includes(sym));
       signals.push(await generateSignal(sym, { headlines: relevant }));
+      processed++;
+      if (onProgress) onProgress((processed / symbols.length) * 100);
     }
     return signals;
   }

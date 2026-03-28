@@ -64,6 +64,10 @@
                   <div class="section-header">
                       <h2>ULTIMATE SIGNALS <span class="badge gold pulse-gold">REAL-TIME DATA</span></h2>
                   </div>
+                  <div class="progress-bar-container glass-panel hidden" id="scan-progress-box">
+                      <div class="progress-label">SCANNING MARKET VECTORS (PATRIOT PRO TIER)</div>
+                      <div class="progress-outer"><div class="progress-inner" id="scan-progress-bar"></div></div>
+                  </div>
                   <div id="signals-feed" class="signals-grid">
                       <!-- Signals from real APIs -->
                       <div class="loader-placeholder">CALCULATING DOMINANCE...</div>
@@ -143,19 +147,34 @@
                         <label>TIER STATUS</label>
                         <div class="tier-badge gold-border">PATRIOT PRO</div>
                     </div>
-                    <button class="gold-button">SAVE PREFERENCES</button>
+                    <button class="gold-button" id="open-plans-btn">UPGRADE TO PRO</button>
                     <button class="red-button">RESTORE THE WALL</button>
                 </div>
             </div>
         </main>
 
         <!-- Mobile Navigation -->
-        <nav class="mobile-nav glass-panel">
-            <a href="javascript:void(0)" class="nav-item active" data-view="dashboard"><i data-lucide="shield"></i><span>EAGLE</span></a>
-            <a href="javascript:void(0)" class="nav-item" data-view="chart"><i data-lucide="trending-up"></i><span>CHART</span></a>
-            <a href="javascript:void(0)" class="nav-item" data-view="speech"><i data-lucide="mic"></i><span>SPEECH</span></a>
-            <a href="javascript:void(0)" class="nav-item" data-view="winning"><i data-lucide="trophy"></i><span>WINNING</span></a>
-            <a href="javascript:void(0)" class="nav-item" data-view="gear"><i data-lucide="settings"></i><span>GEAR</span></a>
+        <nav class="mobile-nav glass-panel patriot-border-glow">
+            <a href="javascript:void(0)" class="nav-item active" data-view="dashboard">
+                <div class="nav-icon-box"><i data-lucide="shield"></i></div>
+                <span>EAGLE</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" data-view="chart">
+                <div class="nav-icon-box"><i data-lucide="trending-up"></i></div>
+                <span>CHART</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" data-view="speech">
+                <div class="nav-icon-box"><i data-lucide="mic"></i></div>
+                <span>SPEECH</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" data-view="winning">
+                <div class="nav-icon-box"><i data-lucide="trophy"></i></div>
+                <span>WINNING</span>
+            </a>
+            <a href="javascript:void(0)" class="nav-item" data-view="gear">
+                <div class="nav-icon-box"><i data-lucide="settings"></i></div>
+                <span>GEAR</span>
+            </a>
         </nav>
 
         <footer class="legal-footer flag-footer">
@@ -177,6 +196,50 @@
           <label for="risk-check">I acknowledge the greatness & risk.</label>
         </div>
         <button id="enter-btn" class="gold-button disabled">ENTER THE DASHBOARD</button>
+      </div>
+    </div>
+
+    <!-- Plans / Subscription Modal -->
+    <div id="plans-modal" class="modal-overlay">
+      <div class="modal-content glass-panel gold-border plans-container">
+        <button class="close-modal" id="close-plans">&times;</button>
+        <h2 class="text-gradient">CHOOSE YOUR DOMINANCE TIER</h2>
+        <div class="plans-grid">
+          <!-- Free -->
+          <div class="plan-card glass-panel">
+            <h3>PATRIOT FREE</h3>
+            <div class="price">$0<span>/mo</span></div>
+            <ul>
+              <li><i data-lucide="check"></i> 5 Market Scans / Day</li>
+              <li><i data-lucide="check"></i> Basic Charts</li>
+              <li><i data-lucide="x" class="text-red"></i> Real-time FRED Macro</li>
+            </ul>
+            <button class="plan-btn disabled">CURRENT PLAN</button>
+          </div>
+          <!-- Pro -->
+          <div class="plan-card glass-panel featured-plan">
+            <div class="ribbon">MOST POPULAR</div>
+            <h3>PATRIOT PRO</h3>
+            <div class="price">$149<span>/mo</span></div>
+            <ul>
+              <li><i data-lucide="check"></i> Unlimited Alpha Scans</li>
+              <li><i data-lucide="check"></i> FRED Macro Intelligence</li>
+              <li><i data-lucide="check"></i> Direct Supabase Sync</li>
+            </ul>
+            <button class="plan-btn gold-button">UPGRADE NOW</button>
+          </div>
+          <!-- Ultra -->
+          <div class="plan-card glass-panel">
+            <h3>MAGA ULTRA</h3>
+            <div class="price">$499<span>/mo</span></div>
+            <ul>
+              <li><i data-lucide="check"></i> Priority API Access</li>
+              <li><i data-lucide="check"></i> Private Signal Channel</li>
+              <li><i data-lucide="check"></i> All Commodities+</li>
+            </ul>
+            <button class="plan-btn gold-button">GO ULTRA</button>
+          </div>
+        </div>
       </div>
     </div>
 

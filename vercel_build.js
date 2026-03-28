@@ -30,10 +30,12 @@ if (fs.existsSync(configPath)) {
         return val.toString().replace(/[\r\n]/g, '').trim();
     };
 
-    const supabaseUrl = getSecret('SUPABASE_URL', '__SUPABASE_URL__');
-    const supabaseKey = getSecret('SUPABASE_ANON_KEY', '__SUPABASE_ANON_KEY__');
+    // MAGA: Preferred keys provided by the user
+    const supabaseUrl = getSecret('SUPABASE_URL', 'https://jjcplqmdlbzkaxhkfdli.supabase.co');
+    const supabaseKey = getSecret('SUPABASE_ANON_KEY', 'sb_publishable_42sD3WdanDiRF_Ca7OqfAA_jLXJhHXs');
     const vantageKey  = getSecret('VANTAGE_KEY', '0AQFRLJK08VO4WZV');
     const finnhubKey  = getSecret('FINNHUB_KEY', 'd73vkbhr01qno4pvskt0d73vkbhr01qno4pvsktg');
+    const fredKey     = getSecret('FRED_KEY', '48bf00ac5df3a0548ae2df72648a0de8');
     const polygonKey  = getSecret('POLYGON_KEY', 'a8aMBxrSJnA5JypSfnfXzWHYj57X3AGe');
 
     // Inject keys
@@ -41,6 +43,7 @@ if (fs.existsSync(configPath)) {
     content = content.replace(/__SUPABASE_ANON_KEY__/g, supabaseKey);
     content = content.replace(/__VANTAGE_KEY__/g, vantageKey);
     content = content.replace(/__FINNHUB_KEY__/g, finnhubKey);
+    content = content.replace(/__FRED_KEY__/g, fredKey);
     content = content.replace(/__POLYGON_KEY__/g, polygonKey);
 
     fs.writeFileSync(configPath, content);

@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const newsFeed = document.getElementById('news-feed');
     const appContainer = document.getElementById('app');
     const riskModal = document.getElementById('risk-modal');
+    const plansModal = document.getElementById('plans-modal');
 
     // 4. Matrix Intelligence Effect
     const MATRIX_PHRASES = [
@@ -52,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const STATUSES = ['SCANNING...', 'ANALYZING...', 'SECURING...', 'OPTIMIZING...', 'WINNING...'];
         let i = 0;
         setInterval(() => {
-            scanStatus.textContent = STATUSES[i % STATUSES.length] + " (RATE LIMIT PROTECTION ACTIVE)";
+            scanStatus.textContent = STATUSES[i % STATUSES.length] + " (RATE LIMIT PROTECTION)";
             i++;
         }, 3000);
     }
@@ -77,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
             osc.stop(this.ctx.currentTime + duration);
         },
         success() {
-            this.play(523.25, 'square', 0.1); // C5
-            setTimeout(() => this.play(659.25, 'square', 0.3), 100); // E5
+            this.play(523.25, 'square', 0.1); 
+            setTimeout(() => this.play(659.25, 'square', 0.3), 100); 
         },
         scan() {
             this.play(880, 'sine', 0.05);
@@ -106,21 +107,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (view === 'chart') initTradingView(currentChartSymbol);
             if (view === 'speech') loadRealNews();
             if (view === 'winning') loadWinningsHistory();
-            SoundEngine.scan(); // Play sound on nav
+            SoundEngine.scan(); 
         });
     });
 
     // 7. Signal Engine Integration
     async function refreshDashboard() {
+        const progressBox = document.getElementById('scan-progress-box');
+        const progressBar = document.getElementById('scan-progress-bar');
+        if (progressBox) progressBox.classList.remove('hidden');
+        
         try {
-            const signals = await window.SignalEngine.scanWatchlist(WATCHLIST);
+            const signals = await window.SignalEngine.scanWatchlist(WATCHLIST, (pct) => {
+                if (progressBar) progressBar.style.width = `${pct}%`;
+            });
             renderSignals(signals);
             updateHeatmap(signals);
             updateSentiment(signals);
             persistSignals(signals);
-            SoundEngine.success(); // Sound on refresh
+            SoundEngine.success(); 
+            if (progressBox) setTimeout(() => progressBox.classList.add('hidden'), 2000); 
         } catch (err) {
             console.error('Telemetery Fail:', err);
+            if (progressBox) progressBox.classList.add('hidden');
         }
     }
 
@@ -154,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const heatmap = document.getElementById('heatmap-viz');
         heatmap.innerHTML = signals.map(sig => {
             const type = sig.changePct > 2 ? 'heat-positive' : (sig.changePct < -2 ? 'heat-negative' : 'heat-neutral');
-            const size = Math.min(100, Math.max(40, Math.abs(sig.changePct) * 10 + 60));
             return `<div class="heat-cell ${type}">
                 <div class="symbol-label">${sig.symbol}</div>
                 <div class="price-tag">$${sig.price}</div>
@@ -190,22 +198,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadWinningsHistory() {
         const historyList = document.getElementById('win-history');
+        
+        console.log("MAGA: Supabase Client Initialized:", !!window.supabaseClient);
         if (!window.supabaseClient) {
-            historyList.innerHTML = '<div class="no-data">OFFLINE MODE: NO SUPABASE CONNECTED.</div>';
+            historyList.innerHTML = '<div class="no-data">OFFLINE MODE: SUPABASE CLIENT NOT INITIALIZED.</div>';
             return;
         }
 
         try {
-            console.log("MAGA: Fetching Winnings from Supabase...");
             const { data, error } = await window.supabaseClient
                 .from('winnings')
-                .select('*')
-                .order('timestamp', { ascending: false });
+                .select('*');
 
             if (error) {
-                console.error("MAGA: Supabase Error Detail:", error);
+                console.error("MAGA: Winnings Fetch Error:", error);
                 throw error;
             }
+            
+            console.log("MAGA: Winnings Data Received:", data);
 
             if (data && data.length > 0) {
                 historyList.innerHTML = data.map(win => `
@@ -223,11 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (err) {
             console.error('Fetch Winnings Fail:', err);
-            historyList.innerHTML = `<div class="no-data">FAILED TO RETRIEVE THE TROPHY ROOM: ${err.message || 'Check Console'}</div>`;
+            historyList.innerHTML = `<div class="no-data">FAILED TO RETRIEVE THE TROPHY ROOM.</div>`;
         }
     }
 
-    // 8. News & Sentiment logic
     async function loadRealNews() {
         newsFeed.innerHTML = '<div class="loader-placeholder">FETCHING INTELLIGENCE...</div>';
         try {
@@ -257,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 9. Chart Logic
     window.initTradingView = function(symbol) {
         const container = document.getElementById('tradingview-widget');
         container.innerHTML = '';
@@ -298,7 +306,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 10. Countdown
+    // 10. Plans Modal Handler
+    document.getElementById('open-plans-btn').addEventListener('click', () => {
+        plansModal.style.display = 'flex';
+        SoundEngine.play(800, 'square', 0.2);
+    });
+
+    document.getElementById('close-plans').addEventListener('click', () => {
+        plansModal.style.display = 'none';
+    });
+
+    window.onclick = (e) => {
+        if (e.target === plansModal) plansModal.style.display = 'none';
+    };
+
     function updateCountdown() {
         const now = new Date();
         const target = new Date();
@@ -310,13 +331,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('countdown-display').innerHTML = `<span class="digit">${h}</span>:<span class="digit">${m}</span>:<span class="digit">${s}</span>`;
     }
 
-    // 11. Initialization
     function startApp() {
         SoundEngine.init();
         startMatrixTerminal();
         updateScanStatus();
         refreshDashboard();
-        initTradingView(currentChartSymbol); // Ensure chart loads at start
+        initTradingView(currentChartSymbol); 
         setInterval(refreshDashboard, 60000 * 5);
         setInterval(updateCountdown, 1000);
     }
@@ -356,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('loading-overlay').classList.add('slide-up');
                 setTimeout(() => {
                     document.getElementById('loading-overlay').style.display = 'none';
-                    riskModal.style.display = 'flex'; // SHOW MODAL HERE
+                    riskModal.style.display = 'flex'; 
                 }, 600);
             }, 1000);
         }
