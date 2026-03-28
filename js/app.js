@@ -413,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const enterBtn = document.getElementById('enter-btn');
 
     riskCheck.addEventListener('change', () => {
+        enterBtn.disabled = !riskCheck.checked;
         enterBtn.classList.toggle('disabled', !riskCheck.checked);
     });
 
@@ -485,14 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Service Worker Registration (for PWA) (ADDED)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('SW registered:', registration);
-            })
-            .catch(error => {
-                console.log('SW registration failed:', error);
-            });
-    });
-}
+    // Service Worker disabled for now (to avoid 404/MIME error)
+    if ('serviceWorker' in navigator && false) {
+        // ...
+    }
