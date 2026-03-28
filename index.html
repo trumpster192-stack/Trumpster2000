@@ -2,14 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRUMPSTER 2000 | Market Dominance Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#07071c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>TRUMPSTER 2000 | Make Markets Great Again</title>
+
     <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+<base target="_blank">
 </head>
 <body class="dark">
     <!-- Loading Animation: The Wall -->
@@ -18,16 +28,17 @@
           <div class="wall-grid" id="wall-bricks"></div>
           <div class="loading-status">
             <h2 id="loading-text">BUILDING THE WALL...</h2>
-            <div id="secure-badge" class="hidden">MARKETS SECURED</div>
+            <div id="secure-badge" class="hidden">🔒 MARKETS SECURED</div>
           </div>
         </div>
     </div>
 
     <!-- Main App -->
     <div id="app" class="hidden">
+        <!-- Header -->
         <header class="app-header glass-panel">
             <div class="logo-container">
-                <img src="assets/logo.png" alt="Logo" class="app-logo">
+                <img src="assets/logo.png" alt="Trumpster 2000" class="app-logo">
                 <span class="text-gradient">TRUMPSTER <span class="text-gold">2000</span></span>
             </div>
             <div class="header-center">
@@ -38,208 +49,630 @@
             </div>
             <div class="market-status glass-panel">
                 <div class="status-dot pulse-green"></div>
-                <span class="status-label">ANTIGRAVITY: <span class="text-gold" id="market-status">OPTIMIZED</span></span>
+                <span class="status-label">AG: <span class="text-gold" id="market-status">OPTIMIZED</span></span>
             </div>
         </header>
 
-        <!-- View Containers -->
+        <!-- VIEW: DASHBOARD (Main View) -->
         <main id="view-dashboard" class="dashboard-view">
             <div class="dashboard-grid">
+              <!-- Sidebar -->
               <aside class="dashboard-sidebar">
+                  <!-- Countdown Widget -->
                   <div class="glass-panel widget gold-border">
-                      <h3 class="widget-header"><i data-lucide="clock"></i> SPEECH COUNTDOWN</h3>
+                      <h3 class="widget-header">
+                          <i data-lucide="clock"></i>
+                          SPEECH COUNTDOWN
+                      </h3>
                       <div id="countdown-display" class="countdown-7segment">
-                          <span class="digit">00</span>:<span class="digit">00</span>:<span class="digit">00</span>
+                          <span class="digit" id="cd-hours">00</span>
+                          <span class="sep">:</span>
+                          <span class="digit" id="cd-minutes">00</span>
+                          <span class="sep">:</span>
+                          <span class="digit" id="cd-seconds">00</span>
                       </div>
                       <p class="countdown-label">TIME UNTIL MASSIVE RALLY</p>
+                      <div id="speech-info" class="speech-details" style="margin-top: 10px; font-size: 0.75rem; color: #888; text-align: center;">
+                          Next: Economic Policy Speech
+                      </div>
                   </div>
-                  
+
+                  <!-- Matrix Terminal -->
                   <div class="glass-panel widget matrix-panel">
-                      <h3 class="widget-header"><i data-lucide="terminal"></i> TELEMETRY FLOW</h3>
-                      <div id="matrix-terminal" class="matrix-text"></div>
+                      <h3 class="widget-header">
+                          <i data-lucide="terminal"></i>
+                          TELEMETRY FLOW
+                      </h3>
+                      <div id="matrix-terminal" class="matrix-text">
+                          <div class="matrix-line">>> Initializing market scanners...</div>
+                      </div>
+                  </div>
+
+                  <!-- Quick Stats -->
+                  <div class="glass-panel widget">
+                      <h3 class="widget-header">
+                          <i data-lucide="activity"></i>
+                          MARKET PULSE
+                      </h3>
+                      <div class="mini-stats">
+                          <div class="mini-stat">
+                              <span class="label">VIX</span>
+                              <span class="val text-gold" id="vix-val">14.2</span>
+                          </div>
+                          <div class="mini-stat">
+                              <span class="label">DXY</span>
+                              <span class="val" id="dxy-val">103.5</span>
+                          </div>
+                          <div class="mini-stat">
+                              <span class="label">GOLD</span>
+                              <span class="val text-gold" id="gold-val">2,045</span>
+                          </div>
+                      </div>
                   </div>
               </aside>
 
-              <section class="signals-container">
-                  <div class="section-header">
-                      <h2>ULTIMATE SIGNALS <span class="badge gold pulse-gold">REAL-TIME DATA</span></h2>
-                  </div>
-                  <div class="progress-bar-container glass-panel hidden" id="scan-progress-box">
-                      <div class="progress-label">SCANNING MARKET VECTORS (PATRIOT PRO TIER)</div>
-                      <div class="progress-outer"><div class="progress-inner" id="scan-progress-bar"></div></div>
-                  </div>
-                  <div id="signals-feed" class="signals-grid">
-                      <!-- Signals from real APIs -->
-                      <div class="loader-placeholder">CALCULATING DOMINANCE...</div>
-                  </div>
-              </section>
+              <!-- Main Content Area -->
+              <div class="main-content">
+                  <!-- Signals Section -->
+                  <section class="signals-container">
+                      <div class="section-header">
+                          <h2>
+                              <i data-lucide="radio"></i>
+                              ULTIMATE SIGNALS 
+                              <span class="badge gold pulse-gold">LIVE</span>
+                          </h2>
+                          <button class="filter-btn" id="filter-signals">
+                              <i data-lucide="filter"></i>
+                          </button>
+                      </div>
 
-              <section class="heatmap-container glass-panel">
-                <div class="section-header"><h2>MARKET DOMINANCE MAP</h2></div>
-                <div id="heatmap-viz" class="heatmap-body"></div>
-              </section>
+                      <div class="progress-bar-container glass-panel hidden" id="scan-progress-box">
+                          <div class="progress-label">SCANNING MARKET VECTORS...</div>
+                          <div class="progress-outer">
+                              <div class="progress-inner" id="scan-progress-bar"></div>
+                          </div>
+                      </div>
+
+                      <div id="signals-feed" class="signals-grid">
+                          <!-- Signals injected by JS -->
+                          <div class="signal-card slide-up">
+                              <div class="signal-header">
+                                  <div class="symbol-info">
+                                      <span class="symbol-box">STOCK</span>
+                                      <span class="symbol-name">DJT</span>
+                                  </div>
+                                  <div class="price-info">
+                                      <div class="price">$45.20</div>
+                                      <div class="change text-green">+2.4%</div>
+                                  </div>
+                              </div>
+                              <div class="signal-body">
+                                  <span class="signal-badge signal-long">
+                                      <i data-lucide="trending-up"></i>
+                                      LONG
+                                  </span>
+                                  <div class="confidence-meter">
+                                      <div class="confidence-label">
+                                          <span>CONFIDENCE</span>
+                                          <span class="text-gold">87%</span>
+                                      </div>
+                                      <div class="meter-outer">
+                                          <div class="meter-inner" style="width: 87%"></div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="signal-meta">
+                                  <small>Vol: 3.2x avg | Speech: 4h 20m</small>
+                              </div>
+                          </div>
+
+                          <div class="signal-card slide-up" style="animation-delay: 0.1s">
+                              <div class="signal-header">
+                                  <div class="symbol-info">
+                                      <span class="symbol-box">COMM</span>
+                                      <span class="symbol-name">GOLD</span>
+                                  </div>
+                                  <div class="price-info">
+                                      <div class="price">$2,045</div>
+                                      <div class="change text-green">+1.2%</div>
+                                  </div>
+                              </div>
+                              <div class="signal-body">
+                                  <span class="signal-badge signal-watch">
+                                      <i data-lucide="eye"></i>
+                                      WATCH
+                                  </span>
+                                  <div class="confidence-meter">
+                                      <div class="confidence-label">
+                                          <span>CONFIDENCE</span>
+                                          <span class="text-gold">65%</span>
+                                      </div>
+                                      <div class="meter-outer">
+                                          <div class="meter-inner" style="width: 65%"></div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="signal-meta">
+                                  <small>Vol: 1.8x avg | Speech: 4h 20m</small>
+                              </div>
+                          </div>
+
+                          <div class="signal-card slide-up" style="animation-delay: 0.2s">
+                              <div class="signal-header">
+                                  <div class="symbol-info">
+                                      <span class="symbol-box">CRYPTO</span>
+                                      <span class="symbol-name">BTC</span>
+                                  </div>
+                                  <div class="price-info">
+                                      <div class="price">$67,420</div>
+                                      <div class="change text-red">-1.5%</div>
+                                  </div>
+                              </div>
+                              <div class="signal-body">
+                                  <span class="signal-badge signal-short">
+                                      <i data-lucide="trending-down"></i>
+                                      SHORT
+                                  </span>
+                                  <div class="confidence-meter">
+                                      <div class="confidence-label">
+                                          <span>CONFIDENCE</span>
+                                          <span class="text-gold">72%</span>
+                                      </div>
+                                      <div class="meter-outer">
+                                          <div class="meter-inner" style="width: 72%"></div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="signal-meta">
+                                  <small>Vol: 2.1x avg | Speech: 4h 20m</small>
+                              </div>
+                          </div>
+                      </div>
+                  </section>
+
+                  <!-- Heatmap Section -->
+                  <section class="heatmap-container glass-panel">
+                      <div class="section-header">
+                          <h2>
+                              <i data-lucide="layout-grid"></i>
+                              MARKET DOMINANCE MAP
+                          </h2>
+                      </div>
+                      <div id="heatmap-viz" class="heatmap-body">
+                          <div class="heat-cell heat-positive">
+                              <span class="ticker">DJT</span>
+                              <span class="price-tag">45.20</span>
+                              <span class="change-pct">+2.4%</span>
+                          </div>
+                          <div class="heat-cell heat-positive">
+                              <span class="ticker">TSLA</span>
+                              <span class="price-tag">175.30</span>
+                              <span class="change-pct">+1.8%</span>
+                          </div>
+                          <div class="heat-cell heat-negative">
+                              <span class="ticker">NVDA</span>
+                              <span class="price-tag">875.20</span>
+                              <span class="change-pct">-0.9%</span>
+                          </div>
+                          <div class="heat-cell heat-positive">
+                              <span class="ticker">BTC</span>
+                              <span class="price-tag">67.4K</span>
+                              <span class="change-pct">+3.2%</span>
+                          </div>
+                          <div class="heat-cell heat-neutral">
+                              <span class="ticker">GLD</span>
+                              <span class="price-tag">204.5</span>
+                              <span class="change-pct">0.0%</span>
+                          </div>
+                          <div class="heat-cell heat-negative">
+                              <span class="ticker">OIL</span>
+                              <span class="price-tag">78.20</span>
+                              <span class="change-pct">-1.2%</span>
+                          </div>
+                          <div class="heat-cell heat-positive">
+                              <span class="ticker">ETH</span>
+                              <span class="price-tag">3,520</span>
+                              <span class="change-pct">+2.1%</span>
+                          </div>
+                          <div class="heat-cell heat-positive">
+                              <span class="ticker">COIN</span>
+                              <span class="price-tag">245.80</span>
+                              <span class="change-pct">+4.5%</span>
+                          </div>
+                      </div>
+                  </section>
+              </div>
             </div>
         </main>
 
+        <!-- VIEW: CHART (Technical Analysis) -->
         <main id="view-chart" class="dashboard-view hidden">
             <div class="glass-panel full-view gold-border">
                 <div class="section-header">
-                  <h2>MARKET TELEMETRY</h2>
+                  <h2>
+                      <i data-lucide="candlestick-chart"></i>
+                      MARKET TELEMETRY
+                  </h2>
                   <div id="symbol-picker" class="symbol-tabs">
-                    <button class="sym-tab active" data-symbol="DJT">DJT</button>
-                    <button class="sym-tab" data-symbol="BTCUSD">BTC</button>
-                    <button class="sym-tab" data-symbol="NVDA">NVDA</button>
-                    <button class="sym-tab" data-symbol="TSLA">TSLA</button>
+                      <button class="sym-tab active" data-symbol="DJT">DJT</button>
+                      <button class="sym-tab" data-symbol="BTCUSD">BTC</button>
+                      <button class="sym-tab" data-symbol="NVDA">NVDA</button>
+                      <button class="sym-tab" data-symbol="TSLA">TSLA</button>
+                      <button class="sym-tab" data-symbol="GLD">GOLD</button>
+                      <button class="sym-tab" data-symbol="CL=F">OIL</button>
                   </div>
                 </div>
                 <div id="tradingview-widget" class="chart-box">
-                  <div class="loader-placeholder">ESTABLISHING SATELLITE LINK...</div>
+                    <!-- TradingView Widget will be injected here -->
+                    <div class="chart-placeholder">
+                        <i data-lucide="bar-chart-3" style="width: 48px; height: 48px; opacity: 0.3;"></i>
+                        <p>Loading Advanced Chart...</p>
+                    </div>
+                </div>
+                <div class="chart-controls">
+                    <button class="sym-tab active">1H</button>
+                    <button class="sym-tab">4H</button>
+                    <button class="sym-tab">1D</button>
+                    <button class="sym-tab">1W</button>
                 </div>
             </div>
         </main>
 
+        <!-- VIEW: SPEECH (Sentiment & News) -->
         <main id="view-speech" class="dashboard-view hidden">
             <div class="glass-panel full-view gold-border">
-                <div class="section-header"><h2>SENTIMENT INTELLIGENCE ENGINE</h2></div>
+                <div class="section-header">
+                    <h2>
+                        <i data-lucide="mic"></i>
+                        SENTIMENT INTELLIGENCE ENGINE
+                    </h2>
+                </div>
                 <div class="sentiment-dashboard">
                     <div class="sentiment-meter-container">
-                      <div class="sentiment-meter gold-border">
-                          <div id="sentiment-needle" class="needle"></div>
-                          <div class="label">MARKET MOOD: <span class="text-gold" id="mood-label">NEUTRAL</span></div>
-                      </div>
-                      <div class="sentiment-stats">
-                        <div class="stat-card"><span class="label">BULLISH HEADLINES</span><span id="bull-count" class="val text-green">0</span></div>
-                        <div class="stat-card"><span class="label">BEARISH HEADLINES</span><span id="bear-count" class="val text-red">0</span></div>
-                      </div>
+                        <div class="sentiment-meter gold-border">
+                            <div id="sentiment-needle" class="needle" style="transform: rotate(15deg);"></div>
+                            <div class="label">MOOD: <span class="text-gold" id="mood-label">BULLISH</span></div>
+                        </div>
+                        <div class="sentiment-stats">
+                            <div class="stat-card">
+                                <span class="label">BULLISH</span>
+                                <span id="bull-count" class="val text-green">24</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="label">BEARISH</span>
+                                <span id="bear-count" class="val text-red">8</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="label">NEUTRAL</span>
+                                <span id="neutral-count" class="val">12</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="label">SENTIMENT</span>
+                                <span id="sentiment-score" class="val text-gold">+0.65</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="news-feed-container">
-                      <h3><i data-lucide="rss"></i> LIVE INTELLIGENCE FEED</h3>
-                      <div id="news-feed" class="news-list">
-                        <!-- Real News Feed -->
-                      </div>
+                        <h3>
+                            <i data-lucide="rss"></i>
+                            LIVE INTELLIGENCE FEED
+                        </h3>
+                        <div id="news-feed" class="news-list">
+                            <div class="news-item">
+                                <span class="news-title">Trump announces new tariff policy on steel imports</span>
+                                <div class="news-meta">
+                                    <span class="source">Bloomberg</span>
+                                    <span class="time">2 min ago</span>
+                                </div>
+                            </div>
+                            <div class="news-item">
+                                <span class="news-title">Market volatility spikes ahead of economic speech</span>
+                                <div class="news-meta">
+                                    <span class="source">CNBC</span>
+                                    <span class="time">15 min ago</span>
+                                </div>
+                            </div>
+                            <div class="news-item">
+                                <span class="news-title">DJT stock sees unusual options activity</span>
+                                <div class="news-meta">
+                                    <span class="source">WSJ</span>
+                                    <span class="time">32 min ago</span>
+                                </div>
+                            </div>
+                            <div class="news-item">
+                                <span class="news-title">Gold rallies as investors seek safe haven</span>
+                                <div class="news-meta">
+                                    <span class="source">Reuters</span>
+                                    <span class="time">1 hr ago</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
 
+        <!-- VIEW: WINNING (History & Stats) -->
         <main id="view-winning" class="dashboard-view hidden">
             <div class="glass-panel full-view gold-border">
-                <h2>HISTORICAL WINNINGS</h2>
+                <div class="section-header">
+                    <h2>
+                        <i data-lucide="trophy"></i>
+                        HISTORICAL WINNINGS
+                    </h2>
+                </div>
                 <div class="trophy-room">
-                    <i data-lucide="trophy" class="trophy-icon text-gold"></i>
-                    <h3>ACCOUNT ACCURACY: <span class="text-gold">99.8%</span></h3>
+                    <i data-lucide="award" class="trophy-icon text-gold" style="width: 64px; height: 64px;"></i>
+                    <h3>TRACK RECORD: <span class="text-gold">78.5%</span> ACCURACY</h3>
+                    <p style="color: #888; margin-bottom: 20px;">Last 30 days performance</p>
+
+                    <div class="stats-summary">
+                        <div class="stat-box">
+                            <span class="number text-green">47</span>
+                            <span class="label">WINS</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="number text-red">13</span>
+                            <span class="label">LOSSES</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="number text-gold">+24.5%</span>
+                            <span class="label">AVG RETURN</span>
+                        </div>
+                    </div>
+
                     <div id="win-history" class="history-list">
-                        <div class="loader-placeholder">RETRIEVING WINNINGS...</div>
+                        <div class="history-item win">
+                            <div class="trade-info">
+                                <strong>DJT LONG</strong>
+                                <small>Today, 9:45 AM</small>
+                            </div>
+                            <div class="trade-result text-green">+5.2%</div>
+                        </div>
+                        <div class="history-item win">
+                            <div class="trade-info">
+                                <strong>BTC SHORT</strong>
+                                <small>Yesterday, 2:30 PM</small>
+                            </div>
+                            <div class="trade-result text-green">+3.8%</div>
+                        </div>
+                        <div class="history-item loss">
+                            <div class="trade-info">
+                                <strong>NVDA LONG</strong>
+                                <small>Mar 26, 11:20 AM</small>
+                            </div>
+                            <div class="trade-result text-red">-1.2%</div>
+                        </div>
+                        <div class="history-item win">
+                            <div class="trade-info">
+                                <strong>GOLD WATCH</strong>
+                                <small>Mar 25, 10:15 AM</small>
+                            </div>
+                            <div class="trade-result text-green">+2.1%</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
 
+        <!-- VIEW: PLANS (Subscription) - SEPARATE DEDICATED VIEW -->
+        <main id="view-plans" class="dashboard-view hidden">
+            <div class="plans-page">
+                <div class="plans-container">
+                    <div class="plans-header">
+                        <h2 class="text-gradient">CHOOSE YOUR DOMINANCE TIER</h2>
+                        <p>Unlock the full power of market intelligence</p>
+                    </div>
+
+                    <div class="plans-grid">
+                        <!-- Free Plan -->
+                        <div class="plan-card glass-panel">
+                            <h3>PATRIOT FREE</h3>
+                            <div class="price">$0<span>/mo</span></div>
+                            <ul>
+                                <li><i data-lucide="check" class="text-green"></i> 5 Market Scans/Day</li>
+                                <li><i data-lucide="check" class="text-green"></i> Basic Charts</li>
+                                <li><i data-lucide="check" class="text-green"></i> 24h Delayed Data</li>
+                                <li><i data-lucide="x" class="text-red"></i> Real-time Signals</li>
+                                <li><i data-lucide="x" class="text-red"></i> FRED Macro Data</li>
+                                <li><i data-lucide="x" class="text-red"></i> API Access</li>
+                            </ul>
+                            <button class="plan-btn disabled" disabled>CURRENT PLAN</button>
+                        </div>
+
+                        <!-- Pro Plan (Featured) -->
+                        <div class="plan-card glass-panel featured-plan">
+                            <div class="ribbon">MOST POPULAR</div>
+                            <h3>PATRIOT PRO</h3>
+                            <div class="price">$149<span>/mo</span></div>
+                            <ul>
+                                <li><i data-lucide="check" class="text-green"></i> Unlimited Scans</li>
+                                <li><i data-lucide="check" class="text-green"></i> Real-time Data</li>
+                                <li><i data-lucide="check" class="text-green"></i> FRED Macro Intel</li>
+                                <li><i data-lucide="check" class="text-green"></i> Advanced Charts</li>
+                                <li><i data-lucide="check" class="text-green"></i> Email Alerts</li>
+                                <li><i data-lucide="x" class="text-red"></i> Private Channel</li>
+                            </ul>
+                            <button class="plan-btn gold-button">UPGRADE NOW</button>
+                        </div>
+
+                        <!-- Ultra Plan -->
+                        <div class="plan-card glass-panel">
+                            <h3>MAGA ULTRA</h3>
+                            <div class="price">$499<span>/mo</span></div>
+                            <ul>
+                                <li><i data-lucide="check" class="text-green"></i> Everything in Pro</li>
+                                <li><i data-lucide="check" class="text-green"></i> Priority API Access</li>
+                                <li><i data-lucide="check" class="text-green"></i> Private Signal Channel</li>
+                                <li><i data-lucide="check" class="text-green"></i> All Commodities</li>
+                                <li><i data-lucide="check" class="text-green"></i> SMS Alerts</li>
+                                <li><i data-lucide="check" class="text-green"></i> Direct Support</li>
+                            </ul>
+                            <button class="plan-btn gold-button">GO ULTRA</button>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Table (Desktop Only) -->
+                    <div class="plan-comparison hidden-mobile">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Free</th>
+                                    <th class="highlight">Pro</th>
+                                    <th>Ultra</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Market Scans</td>
+                                    <td>5/day</td>
+                                    <td class="highlight">Unlimited</td>
+                                    <td>Unlimited</td>
+                                </tr>
+                                <tr>
+                                    <td>Data Latency</td>
+                                    <td>24h</td>
+                                    <td class="highlight">Real-time</td>
+                                    <td>Real-time</td>
+                                </tr>
+                                <tr>
+                                    <td>Chart Timeframes</td>
+                                    <td>1D only</td>
+                                    <td class="highlight">All</td>
+                                    <td>All</td>
+                                </tr>
+                                <tr>
+                                    <td>FRED Macro Data</td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td class="highlight"><span class="check">✓</span></td>
+                                    <td><span class="check">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td>API Access</td>
+                                    <td><span class="cross">✗</span></td>
+                                    <td class="highlight">Standard</td>
+                                    <td>Priority</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(255,215,0,0.05); border-radius: 8px;">
+                        <p style="font-size: 0.85rem; color: #888;">
+                            <i data-lucide="shield-check" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"></i>
+                            30-day money-back guarantee. Cancel anytime. No questions asked.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- VIEW: GEAR (Settings) -->
         <main id="view-gear" class="dashboard-view hidden">
-            <div class="glass-panel full-view gold-border">
-                <h2>DASHBOARD SETTINGS</h2>
+            <div class="glass-panel full-view gold-border" style="max-width: 600px; margin: 0 auto;">
+                <div class="section-header">
+                    <h2>
+                        <i data-lucide="settings"></i>
+                        DASHBOARD SETTINGS
+                    </h2>
+                </div>
                 <div class="settings-grid">
                     <div class="setting-item">
-                        <label>ALPHA VANTAGE KEY</label>
-                        <input type="password" class="glass-input" value="****************" disabled id="settings-av-key">
+                        <label>ALPHA VANTAGE API KEY</label>
+                        <input type="password" class="glass-input" value="************************" disabled id="settings-av-key">
+                        <small style="color: #666; font-size: 0.75rem;">Contact support to update API keys</small>
                     </div>
+
                     <div class="setting-item">
-                        <label>TIER STATUS</label>
+                        <label>CURRENT TIER</label>
                         <div class="tier-badge gold-border">PATRIOT PRO</div>
                     </div>
-                    <button class="gold-button" id="open-plans-btn">UPGRADE TO PRO</button>
-                    <button class="red-button">RESTORE THE WALL</button>
+
+                    <div class="setting-item">
+                        <label>NOTIFICATIONS</label>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <label class="toggle-label">
+                                <input type="checkbox" checked> Push
+                            </label>
+                            <label class="toggle-label">
+                                <input type="checkbox" checked> Email
+                            </label>
+                            <label class="toggle-label">
+                                <input type="checkbox"> SMS
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label>DISPLAY</label>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <label class="toggle-label">
+                                <input type="checkbox" checked> Dark Mode
+                            </label>
+                            <label class="toggle-label">
+                                <input type="checkbox" checked> Animations
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="gold-button" id="open-plans-btn" onclick="showView('plans')">
+                        <i data-lucide="crown" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"></i>
+                        UPGRADE PLAN
+                    </button>
+
+                    <button class="red-button" onclick="resetWall()">
+                        <i data-lucide="refresh-cw" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 5px;"></i>
+                        RESTORE THE WALL
+                    </button>
                 </div>
             </div>
         </main>
 
         <!-- Mobile Navigation -->
-        <nav class="mobile-nav glass-panel patriot-border-glow">
-            <a href="javascript:void(0)" class="nav-item active" data-view="dashboard">
+        <nav class="mobile-nav glass-panel">
+            <a href="javascript:void(0)" class="nav-item active" data-view="dashboard" onclick="showView('dashboard')">
                 <div class="nav-icon-box"><i data-lucide="shield"></i></div>
                 <span>EAGLE</span>
             </a>
-            <a href="javascript:void(0)" class="nav-item" data-view="chart">
+            <a href="javascript:void(0)" class="nav-item" data-view="chart" onclick="showView('chart')">
                 <div class="nav-icon-box"><i data-lucide="trending-up"></i></div>
                 <span>CHART</span>
             </a>
-            <a href="javascript:void(0)" class="nav-item" data-view="speech">
+            <a href="javascript:void(0)" class="nav-item" data-view="speech" onclick="showView('speech')">
                 <div class="nav-icon-box"><i data-lucide="mic"></i></div>
                 <span>SPEECH</span>
             </a>
-            <a href="javascript:void(0)" class="nav-item" data-view="winning">
+            <a href="javascript:void(0)" class="nav-item" data-view="winning" onclick="showView('winning')">
                 <div class="nav-icon-box"><i data-lucide="trophy"></i></div>
                 <span>WINNING</span>
             </a>
-            <a href="javascript:void(0)" class="nav-item" data-view="gear">
+            <a href="javascript:void(0)" class="nav-item" data-view="gear" onclick="showView('gear')">
                 <div class="nav-icon-box"><i data-lucide="settings"></i></div>
                 <span>GEAR</span>
             </a>
         </nav>
 
+        <!-- Footer -->
         <footer class="legal-footer flag-footer">
             <div class="flag-stars">★ ★ ★ ★ ★</div>
             <div class="footer-content">
-                <p>"For entertainment and educational purposes only. Not financial advice. Past performance does not guarantee future results."</p>
-                <p>Data provided by [Alpha Vantage, Finnhub, Polygon, CoinGecko].</p>
+                <p>"For entertainment and educational purposes only. Not financial advice."</p>
+                <p>Data: Alpha Vantage, Finnhub, CoinGecko | &copy; 2026 Trumpster 2000</p>
             </div>
         </footer>
     </div>
 
-    <!-- Modals -->
+    <!-- Risk Modal -->
     <div id="risk-modal" class="modal-overlay">
       <div class="modal-content glass-panel gold-border">
-        <h2>RISK ACKNOWLEDGMENT</h2>
-        <p>Trading is for real winners. We are winning tremendously, but you must acknowledge the risk of total market dominance.</p>
+        <h2>🦅 RISK ACKNOWLEDGMENT</h2>
+        <p>Trading involves substantial risk. Past performance does not guarantee future results. Only risk capital you can afford to lose.</p>
         <div class="checkbox-container">
           <input type="checkbox" id="risk-check">
-          <label for="risk-check">I acknowledge the greatness & risk.</label>
+          <label for="risk-check">I acknowledge the risk and agree to the Terms.</label>
         </div>
-        <button id="enter-btn" class="gold-button disabled">ENTER THE DASHBOARD</button>
-      </div>
-    </div>
-
-    <!-- Plans / Subscription Modal -->
-    <div id="plans-modal" class="modal-overlay">
-      <div class="modal-content glass-panel gold-border plans-container">
-        <button class="close-modal" id="close-plans">&times;</button>
-        <h2 class="text-gradient">CHOOSE YOUR DOMINANCE TIER</h2>
-        <div class="plans-grid">
-          <!-- Free -->
-          <div class="plan-card glass-panel">
-            <h3>PATRIOT FREE</h3>
-            <div class="price">$0<span>/mo</span></div>
-            <ul>
-              <li><i data-lucide="check"></i> 5 Market Scans / Day</li>
-              <li><i data-lucide="check"></i> Basic Charts</li>
-              <li><i data-lucide="x" class="text-red"></i> Real-time FRED Macro</li>
-            </ul>
-            <button class="plan-btn disabled">CURRENT PLAN</button>
-          </div>
-          <!-- Pro -->
-          <div class="plan-card glass-panel featured-plan">
-            <div class="ribbon">MOST POPULAR</div>
-            <h3>PATRIOT PRO</h3>
-            <div class="price">$149<span>/mo</span></div>
-            <ul>
-              <li><i data-lucide="check"></i> Unlimited Alpha Scans</li>
-              <li><i data-lucide="check"></i> FRED Macro Intelligence</li>
-              <li><i data-lucide="check"></i> Direct Supabase Sync</li>
-            </ul>
-            <button class="plan-btn gold-button">UPGRADE NOW</button>
-          </div>
-          <!-- Ultra -->
-          <div class="plan-card glass-panel">
-            <h3>MAGA ULTRA</h3>
-            <div class="price">$499<span>/mo</span></div>
-            <ul>
-              <li><i data-lucide="check"></i> Priority API Access</li>
-              <li><i data-lucide="check"></i> Private Signal Channel</li>
-              <li><i data-lucide="check"></i> All Commodities+</li>
-            </ul>
-            <button class="plan-btn gold-button">GO ULTRA</button>
-          </div>
-        </div>
+        <button id="enter-btn" class="gold-button disabled" disabled>ENTER DASHBOARD</button>
       </div>
     </div>
 
@@ -248,5 +681,8 @@
     <script src="js/config.js"></script>
     <script src="js/signals.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- Initialize Lucide Icons -->
+    <script>lucide.createIcons();</script>
 </body>
 </html>
