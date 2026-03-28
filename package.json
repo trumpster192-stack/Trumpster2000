@@ -1,0 +1,7 @@
+{
+  "name": "trumpster-2000",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node vercel_build.js"
+  }
+}
