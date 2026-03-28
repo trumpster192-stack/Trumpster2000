@@ -22,6 +22,12 @@
 .widget {
   padding: 20px;
   min-height: 120px;
+  border-top: 2px solid var(--patriot-blue);
+  background: linear-gradient(135deg, rgba(60, 59, 110, 0.1), rgba(0, 0, 0, 0.4));
+}
+
+.widget.gold-border {
+  border-top-color: var(--gold-primary);
 }
 
 /* Matrix Terminal Effect */
@@ -308,6 +314,72 @@
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--gold-secondary); border-radius: 2px; }
+
+/* Gear View / Settings Enhancements */
+.settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  max-width: 600px;
+  margin: 30px auto;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setting-item label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--gold-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 12px 15px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.tier-badge {
+  display: inline-block;
+  padding: 10px 20px;
+  font-weight: 900;
+  color: var(--gold-primary);
+  background: rgba(255, 215, 0, 0.05);
+  text-align: center;
+  border-radius: 4px;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.red-button {
+  background: var(--patriot-red);
+  border: none;
+  padding: 14px 28px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.red-button:hover {
+  box-shadow: 0 0 15px var(--patriot-red);
+  transform: scale(1.02);
+}
 
 /* Mobile */
 @media (max-width: 1000px) {

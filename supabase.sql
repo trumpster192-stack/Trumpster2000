@@ -1,7 +1,7 @@
--- TRUMPSTER 2000 - SUPABASE SCHEMA
--- RUN THIS IN THE SUPABASE SQL EDITOR
+-- TRUMPSTER 2000 - SUPABASE SCHEMA (PATRIOT EDITION)
+-- RUN THIS IN THE SUPABASE SQL EDITOR TO SEED THE TROPHY ROOM
 
--- 1. Create a table for market signals history
+-- 1. Market signals history
 CREATE TABLE IF NOT EXISTS public.signals_history (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     symbol TEXT NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public.signals_history (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 2. Create a table for Winning Winnings (The Trophy Room)
+-- 2. The Trophy Room (Winnings)
 CREATE TABLE IF NOT EXISTS public.winnings (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     symbol TEXT NOT NULL,
@@ -26,17 +26,20 @@ CREATE TABLE IF NOT EXISTS public.winnings (
 ALTER TABLE public.signals_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.winnings ENABLE ROW LEVEL SECURITY;
 
--- 4. Create Policies for public access (Simplified for MVP)
--- In a real app, you would use authentication, but for this dashboard we'll allow public access to show off the data.
+-- 4. Create Policies
+CREATE POLICY IF NOT EXISTS "Allow public read signals" ON public.signals_history FOR SELECT USING (true);
+CREATE POLICY IF NOT EXISTS "Allow public insert signals" ON public.signals_history FOR INSERT WITH CHECK (true);
+CREATE POLICY IF NOT EXISTS "Allow public read winnings" ON public.winnings FOR SELECT USING (true);
+CREATE POLICY IF NOT EXISTS "Allow public insert winnings" ON public.winnings FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Allow public read signals" ON public.signals_history FOR SELECT USING (true);
-CREATE POLICY "Allow public insert signals" ON public.signals_history FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Allow public read winnings" ON public.winnings FOR SELECT USING (true);
-CREATE POLICY "Allow public insert winnings" ON public.winnings FOR INSERT WITH CHECK (true);
-
--- 5. Seed some initial "Winning" data
+-- 5. Seed Real-Looking PATRIOT Winnings
+-- DELETE FROM public.winnings; -- Uncomment if you want to reset
 INSERT INTO public.winnings (symbol, profit_pct, action) VALUES 
-('DJT', 420.69, 'STRONG BUY'),
+('DJT', 1420.69, 'STRONG BUY'),
 ('BTC-USD', 69.42, 'BUY'),
-('TSLA', 12.50, 'BUY');
+('TSLA', 45.12, 'BUY'),
+('NVDA', 122.50, 'STRONG BUY'),
+('DJT', 88.00, 'BUY'),
+('ETH-USD', 34.20, 'BUY'),
+('SPY', 12.04, 'BUY'),
+('QQQ', 15.60, 'BUY');
