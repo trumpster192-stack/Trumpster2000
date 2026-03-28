@@ -1,15 +1,71 @@
 /**
  * ============================================================
- *  TRUMPSTER 2000 — app.js (Patriot Edition)
+ *  TRUMPSTER 2000 — app.js (Patriot Edition v2.0)
  *  The Greatest Application Logic Ever Built.
+ *  NOW WITH RESPONSIVE VIEW SWITCHING
  * ============================================================
  */
+
+// Global State for View Management
+const AppState = {
+    currentView: 'dashboard',
+    isLoading: true,
+    riskAccepted: false,
+    scanProgress: 0,
+    countdownInterval: null,
+    matrixInterval: null
+};
+
+// View Management System (ADDED FOR RESPONSIVE NAVIGATION)
+function showView(viewName) {
+    // Hide all views
+    const views = document.querySelectorAll('.dashboard-view');
+    views.forEach(view => {
+        view.classList.add('hidden');
+    });
+
+    // Show target view
+    const targetView = document.getElementById(`view-${viewName}`);
+    if (targetView) {
+        targetView.classList.remove('hidden');
+        targetView.classList.add('slide-up');
+
+        // Re-trigger animation
+        setTimeout(() => {
+            targetView.classList.remove('slide-up');
+        }, 600);
+    }
+
+    // Update nav active state
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.view === viewName) {
+            item.classList.add('active');
+        }
+    });
+
+    AppState.currentView = viewName;
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Refresh icons for new view
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+
+    // Trigger view-specific initializations (FROM ORIGINAL)
+    if (viewName === 'chart') initTradingView(currentChartSymbol);
+    if (viewName === 'speech') loadRealNews();
+    if (viewName === 'winning') loadWinningsHistory();
+    if (typeof SoundEngine !== 'undefined') SoundEngine.scan();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize Lucide Icons
     lucide.createIcons();
 
-    // 2. State & Constants
+    // 2. State & Constants (FROM ORIGINAL)
     const WATCHLIST = [
         'DJT', 'NVDA', 'TSLA', 'AAPL', 'SPY', 'QQQ', 
         'BTC-USD', 'ETH-USD',
@@ -17,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     let currentChartSymbol = 'DJT';
 
-    // 3. Elements
+    // 3. Elements (FROM ORIGINAL)
     const signalsFeed = document.getElementById('signals-feed');
     const matrixTerminal = document.getElementById('matrix-terminal');
     const scanStatus = document.getElementById('scan-status');
@@ -26,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const riskModal = document.getElementById('risk-modal');
     const plansModal = document.getElementById('plans-modal');
 
-    // 4. Matrix Intelligence Effect
+    // 4. Matrix Intelligence Effect (FROM ORIGINAL)
     const MATRIX_PHRASES = [
       "> ESTABLISHING SATELLITE LINK...",
       "> DECRYPTING MARKET SYMBOLS...",
@@ -40,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function startMatrixTerminal() {
-        setInterval(() => {
+        AppState.matrixInterval = setInterval(() => {
             const line = document.createElement('div');
             line.className = 'matrix-line';
             line.textContent = MATRIX_PHRASES[Math.floor(Math.random() * MATRIX_PHRASES.length)];
@@ -58,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    // 5. Sound Engine (Synthesized Patriot Success)
+    // 5. Sound Engine (Synthesized Patriot Success) (FROM ORIGINAL)
     const SoundEngine = {
         ctx: null,
         init() {
@@ -86,37 +142,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 6. Navigation Logic
+    // Make SoundEngine globally available for view switching
+    window.SoundEngine = SoundEngine;
+
+    // 6. Navigation Logic (MERGED - Original + New View Switching)
     const navItems = document.querySelectorAll('.nav-item');
-    const views = document.querySelectorAll('.dashboard-view');
 
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const view = item.dataset.view;
-            navItems.forEach(n => n.classList.remove('active'));
-            item.classList.add('active');
 
-            views.forEach(v => {
-                v.classList.add('hidden');
-                if (v.id === `view-${view}`) {
-                    v.classList.remove('hidden');
-                    v.classList.add('slide-up');
-                }
-            });
+            // Use new view switching system
+            showView(view);
 
-            if (view === 'chart') initTradingView(currentChartSymbol);
-            if (view === 'speech') loadRealNews();
-            if (view === 'winning') loadWinningsHistory();
-            SoundEngine.scan(); 
+            // Original view-specific logic now handled in showView()
         });
     });
 
-    // 7. Signal Engine Integration
+    // 7. Signal Engine Integration (FROM ORIGINAL - COMPLETE)
     async function refreshDashboard() {
         const progressBox = document.getElementById('scan-progress-box');
         const progressBar = document.getElementById('scan-progress-bar');
         if (progressBox) progressBox.classList.remove('hidden');
-        
+
         try {
             const signals = await window.SignalEngine.scanWatchlist(WATCHLIST, (pct) => {
                 if (progressBar) progressBar.style.width = `${pct}%`;
@@ -175,10 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const needle = document.getElementById('sentiment-needle');
         const moodLabel = document.getElementById('mood-label');
         const avg = signals.reduce((sum, s) => sum + s.composite, 0) / signals.length;
-        
+
         const rotation = (avg / 100) * 90;
         needle.style.transform = `rotate(${rotation}deg)`;
-        
+
         if (avg > 40) moodLabel.textContent = 'EXTREME BULLISH';
         else if (avg > 10) moodLabel.textContent = 'BULLISH';
         else if (avg > -10) moodLabel.textContent = 'NEUTRAL';
@@ -198,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadWinningsHistory() {
         const historyList = document.getElementById('win-history');
-        
+
         console.log("MAGA: Supabase Client Initialized:", !!window.supabaseClient);
         if (!window.supabaseClient) {
             historyList.innerHTML = '<div class="no-data">OFFLINE MODE: SUPABASE CLIENT NOT INITIALIZED.</div>';
@@ -214,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("MAGA: Winnings Fetch Error:", error);
                 throw error;
             }
-            
+
             console.log("MAGA: Winnings Data Received:", data);
 
             if (data && data.length > 0) {
@@ -237,13 +285,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Make loadWinningsHistory globally available
+    window.loadWinningsHistory = loadWinningsHistory;
+
     async function loadRealNews() {
         newsFeed.innerHTML = '<div class="loader-placeholder">FETCHING INTELLIGENCE...</div>';
         try {
             const news = await window.SignalEngine.fetchNews();
             const bullCount = document.getElementById('bull-count');
             const bearCount = document.getElementById('bear-count');
-            
+
             let bulls = 0, bears = 0;
             newsFeed.innerHTML = news.map(item => {
                 if (item.sentiment > 0.1) bulls++;
@@ -258,13 +309,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             }).join('');
-            
+
             bullCount.textContent = bulls;
             bearCount.textContent = bears;
         } catch (err) {
             newsFeed.innerHTML = '<div class="no-data">NEWS FEED OFFLINE.</div>';
         }
     }
+
+    // Make loadRealNews globally available
+    window.loadRealNews = loadRealNews;
 
     window.initTradingView = function(symbol) {
         const container = document.getElementById('tradingview-widget');
@@ -276,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (symbol === 'CL=F') symbolMap = 'NYMEX:CL1!';
             if (symbol === 'GC=F') symbolMap = 'COMEX:GC1!';
             if (symbol === 'SI=F') symbolMap = 'COMEX:SI1!';
-            
+
             new TradingView.widget({
                 "container_id": "tradingview-widget",
                 "width": "100%",
@@ -306,19 +360,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 10. Plans Modal Handler
-    document.getElementById('open-plans-btn').addEventListener('click', () => {
-        plansModal.style.display = 'flex';
-        SoundEngine.play(800, 'square', 0.2);
-    });
+    // 10. Plans Modal Handler (FROM ORIGINAL - Now also accessible as view)
+    const openPlansBtn = document.getElementById('open-plans-btn');
+    if (openPlansBtn) {
+        openPlansBtn.addEventListener('click', () => {
+            // Check if we're using modal or view
+            if (plansModal) {
+                plansModal.style.display = 'flex';
+                SoundEngine.play(800, 'square', 0.2);
+            } else {
+                showView('plans');
+            }
+        });
+    }
 
-    document.getElementById('close-plans').addEventListener('click', () => {
-        plansModal.style.display = 'none';
-    });
+    const closePlansBtn = document.getElementById('close-plans');
+    if (closePlansBtn && plansModal) {
+        closePlansBtn.addEventListener('click', () => {
+            plansModal.style.display = 'none';
+        });
+    }
 
-    window.onclick = (e) => {
-        if (e.target === plansModal) plansModal.style.display = 'none';
-    };
+    if (plansModal) {
+        window.onclick = (e) => {
+            if (e.target === plansModal) plansModal.style.display = 'none';
+        };
+    }
 
     function updateCountdown() {
         const now = new Date();
@@ -338,10 +405,10 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshDashboard();
         initTradingView(currentChartSymbol); 
         setInterval(refreshDashboard, 60000 * 5);
-        setInterval(updateCountdown, 1000);
+        AppState.countdownInterval = setInterval(updateCountdown, 1000);
     }
 
-    // Modal Entrance
+    // Modal Entrance (FROM ORIGINAL)
     const riskCheck = document.getElementById('risk-check');
     const enterBtn = document.getElementById('enter-btn');
 
@@ -351,15 +418,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     enterBtn.addEventListener('click', () => {
         if (!riskCheck.checked) return;
+        AppState.riskAccepted = true;
         riskModal.style.display = 'none';
         appContainer.classList.remove('hidden');
         appContainer.classList.add('slide-up');
         startApp();
     });
 
-    // Loading Sequence
+    // Loading Sequence (FROM ORIGINAL - with responsive brick count)
     const wallGrid = document.getElementById('wall-bricks');
-    for (let i = 0; i < 40; i++) {
+    // Responsive brick count based on screen width
+    const brickCount = window.innerWidth < 768 ? 48 : 80;
+    for (let i = 0; i < brickCount; i++) {
         const brick = document.createElement('div');
         brick.className = 'brick';
         wallGrid.appendChild(brick);
@@ -376,9 +446,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('loading-overlay').classList.add('slide-up');
                 setTimeout(() => {
                     document.getElementById('loading-overlay').style.display = 'none';
+                    AppState.isLoading = false;
                     riskModal.style.display = 'flex'; 
                 }, 600);
             }, 1000);
         }
     }, 40);
+
+    // Responsive Helpers (ADDED)
+    function handleResize() {
+        const width = window.innerWidth;
+
+        // Adjust matrix lines based on screen size
+        const terminal = document.getElementById('matrix-terminal');
+        if (terminal) {
+            const maxLines = width < 768 ? 6 : 8;
+            while (terminal.children.length > maxLines) {
+                terminal.removeChild(terminal.firstChild);
+            }
+        }
+    }
+
+    // Handle resize
+    window.addEventListener('resize', handleResize);
+
+    // Prevent zoom on double tap (mobile)
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+
+    // Prevent pull-to-refresh on mobile
+    document.body.style.overscrollBehavior = 'none';
 });
+
+// Service Worker Registration (for PWA) (ADDED)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('SW registered:', registration);
+            })
+            .catch(error => {
+                console.log('SW registration failed:', error);
+            });
+    });
+}
