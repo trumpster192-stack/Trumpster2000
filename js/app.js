@@ -10,7 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 
     // 2. State & Constants
-    const WATCHLIST = ['DJT', 'NVDA', 'TSLA', 'SPY', 'QQQ', 'BTC-USD', 'ETH-USD', 'AAPL'];
+    const WATCHLIST = [
+        'DJT', 'NVDA', 'TSLA', 'AAPL', 'SPY', 'QQQ', 
+        'BTC-USD', 'ETH-USD',
+        'CL=F', 'GC=F', 'SI=F', 'HG=F' // Crude Oil, Gold, Silver, Copper
+    ];
     let currentChartSymbol = 'DJT';
 
     // 3. Elements
@@ -48,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const STATUSES = ['SCANNING...', 'ANALYZING...', 'SECURING...', 'OPTIMIZING...', 'WINNING...'];
         let i = 0;
         setInterval(() => {
-            scanStatus.textContent = STATUSES[i % STATUSES.length];
+            scanStatus.textContent = STATUSES[i % STATUSES.length] + " (RATE LIMIT PROTECTION ACTIVE)";
             i++;
         }, 3000);
     }
@@ -151,9 +155,10 @@ document.addEventListener('DOMContentLoaded', () => {
         heatmap.innerHTML = signals.map(sig => {
             const type = sig.changePct > 2 ? 'heat-positive' : (sig.changePct < -2 ? 'heat-negative' : 'heat-neutral');
             const size = Math.min(100, Math.max(40, Math.abs(sig.changePct) * 10 + 60));
-            return `<div class="heat-cell ${type}" style="width: ${size}px; height: 60px;">
-                <span>${sig.symbol}</span>
-                <span style="font-size: 0.6rem">${sig.changePct}%</span>
+            return `<div class="heat-cell ${type}">
+                <div class="symbol-label">${sig.symbol}</div>
+                <div class="price-tag">$${sig.price}</div>
+                <div style="font-size: 0.6rem; margin-top: 2px;">${sig.changePct}%</div>
             </div>`;
         }).join('');
     }
@@ -191,12 +196,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            console.log("MAGA: Fetching Winnings from Supabase...");
             const { data, error } = await window.supabaseClient
                 .from('winnings')
                 .select('*')
                 .order('timestamp', { ascending: false });
 
-            if (error) throw error;
+            if (error) {
+                console.error("MAGA: Supabase Error Detail:", error);
+                throw error;
+            }
 
             if (data && data.length > 0) {
                 historyList.innerHTML = data.map(win => `
@@ -214,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (err) {
             console.error('Fetch Winnings Fail:', err);
-            historyList.innerHTML = '<div class="no-data">FAILED TO RETRIEVE THE TROPHY ROOM.</div>';
+            historyList.innerHTML = `<div class="no-data">FAILED TO RETRIEVE THE TROPHY ROOM: ${err.message || 'Check Console'}</div>`;
         }
     }
 
@@ -255,11 +264,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const script = document.createElement('script');
         script.src = 'https://s3.tradingview.com/tv.js';
         script.onload = () => {
+            let symbolMap = symbol;
+            if (symbol === 'CL=F') symbolMap = 'NYMEX:CL1!';
+            if (symbol === 'GC=F') symbolMap = 'COMEX:GC1!';
+            if (symbol === 'SI=F') symbolMap = 'COMEX:SI1!';
+            
             new TradingView.widget({
                 "container_id": "tradingview-widget",
                 "width": "100%",
                 "height": "100%",
-                "symbol": symbol.includes('USD') || symbol === 'BTC' ? `BINANCE:${symbol.replace('-','')}` : `NASDAQ:${symbol}`,
+                "symbol": symbolMap.includes(':') ? symbolMap : (symbol.includes('USD') || symbol === 'BTC' ? `BINANCE:${symbol.replace('-','')}` : `NASDAQ:${symbol}`),
                 "interval": "D",
                 "timezone": "Etc/UTC",
                 "theme": "dark",

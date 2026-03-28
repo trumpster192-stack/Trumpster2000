@@ -25,6 +25,7 @@ const CONFIG = {
     'AAPL','MSFT','NVDA','TSLA','SPY','QQQ',
     'AMD','META','AMZN','GOOGL','DJT',
     'BTC-USD','ETH-USD',
+    'CL=F','GC=F','SI=F' // Crude Oil, Gold, Silver
   ],
 
   WEIGHTS: {
@@ -268,11 +269,11 @@ async function generateSignal(symbol, ctx = {}) {
   const compositeNorm = Math.max(-100, Math.min(100, composite));
 
   let action, emoji;
-  if (compositeNorm >= 60) { action = 'STRONG BUY'; emoji = '🚀'; }
-  else if (compositeNorm >= 20) { action = 'BUY'; emoji = '📈'; }
-  else if (compositeNorm >= -20) { action = 'WATCH'; emoji = '👀'; }
-  else if (compositeNorm >= -60) { action = 'SELL'; emoji = '📉'; }
-  else { action = 'STRONG SELL'; emoji = '💀'; }
+  if (compositeNorm >= 60) { action = 'STRONG LONG'; emoji = '🚀'; }
+  else if (compositeNorm >= 20) { action = 'LONG'; emoji = '📈'; }
+  else if (compositeNorm >= -20) { action = 'WATCH/NEUTRAL'; emoji = '👀'; }
+  else if (compositeNorm >= -60) { action = 'SHORT'; emoji = '📉'; }
+  else { action = 'STRONG SHORT'; emoji = '💀'; }
 
   return {
     symbol,

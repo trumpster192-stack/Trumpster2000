@@ -144,7 +144,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  padding: 10px 0;
+  padding: 15px 0;
 }
 
 .heat-cell {
@@ -153,12 +153,18 @@
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 900;
-  transition: transform 0.2s ease;
+  padding: 10px;
+  min-width: 100px;
+  min-height: 80px;
+  transition: transform 0.2s ease, box-shadow 0.2s;
+  text-align: center;
 }
 
-.heat-cell:hover { transform: scale(1.05); }
+.heat-cell:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+
+.heat-cell .price-tag { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; margin-top: 4px; color: #fff; }
 
 .heat-positive { background: rgba(0, 255, 65, 0.2); border: 1px solid var(--success-green); color: var(--success-green); }
 .heat-negative { background: rgba(255, 49, 49, 0.2); border: 1px solid var(--error-red); color: var(--error-red); }
@@ -308,6 +314,40 @@
   justify-content: space-between;
   font-size: 0.7rem;
   color: #666;
+}
+
+/* Flag Footer */
+.flag-footer {
+  position: relative;
+  background: repeating-linear-gradient(to bottom,
+    var(--patriot-red) 0px, var(--patriot-red) 15px,
+    var(--patriot-white) 15px, var(--patriot-white) 30px
+  );
+  overflow: hidden;
+  padding: 0 !important;
+  color: #fff;
+  border-top: 10px solid var(--patriot-blue);
+}
+
+.flag-stars {
+  background: var(--patriot-blue);
+  padding: 10px 30px;
+  font-size: 1.2rem;
+  letter-spacing: 5px;
+  display: inline-block;
+  color: #fff;
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
+  margin-bottom: -1px;
+  min-width: 250px;
+  text-shadow: 0 0 5px #fff;
+}
+
+.footer-content {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px 40px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 /* Scrollbar */
