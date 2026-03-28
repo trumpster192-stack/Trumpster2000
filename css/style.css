@@ -76,6 +76,7 @@ h1, h2, h3, h4 {
 .text-gradient {
   background: linear-gradient(135deg, var(--gold-secondary) 0%, var(--gold-primary) 50%, #FFF 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 900;
 }

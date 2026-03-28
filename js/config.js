@@ -12,9 +12,9 @@ window.TRUMPSTER_CONFIG = {
     SUPABASE_ANON_KEY : '__SUPABASE_ANON_KEY__',
     
     // Fallbacks or Defaults
-    VANTAGE_KEY       : '0AQFRLJK08VO4WZV', // Default key
-    FINNHUB_KEY       : 'd73vkbhr01qno4pvskt0d73vkbhr01qno4pvsktg',
-    POLYGON_KEY       : 'a8aMBxrSJnA5JypSfnfXzWHYj57X3AGe'
+    VANTAGE_KEY       : '__VANTAGE_KEY__',
+    FINNHUB_KEY       : '__FINNHUB_KEY__',
+    POLYGON_KEY       : '__POLYGON_KEY__'
 };
 
 // Initialize Supabase Client
