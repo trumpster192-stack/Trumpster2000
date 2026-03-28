@@ -255,8 +255,12 @@ async function generateSignal(symbol, ctx = {}) {
     if (!quote?.price) { try { quote = await fetchAlphaVantageQuote(symbol); } catch (_) {} }
   }
 
-  // 2. Sentiment Logic (Simple simulation of full Node logic for browser perf)
-  const headlines = ctx.headlines || [];
+  // 2. Fetch Real News Sentiment
+  let headlines = ctx.headlines || [];
+  if (!headlines.length && CONFIG.ALPHA_VANTAGE_KEY) {
+    headlines = await window.SignalEngine.fetchNews(symbol);
+  }
+
   const textSentiment = aggregateSentiment(headlines);
   const techScore = quote?.changePct ? quote.changePct * 5 : 0; // Simplified technical score
 
@@ -285,11 +289,39 @@ async function generateSignal(symbol, ctx = {}) {
 // Export for global use in app.js
 window.SignalEngine = {
   generateSignal,
+  fetchNews: async (symbol = '') => {
+    const cKey = `av:news:${symbol || 'global'}`;
+    const hit = cache.get(cKey);
+    if (hit) return hit;
+
+    let url = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey=${CONFIG.ALPHA_VANTAGE_KEY}`;
+    if (symbol) url += `&tickers=${encodeURIComponent(symbol)}`;
+    
+    try {
+      const data = await avLimiter.schedule(() => fetchJSON(url));
+      const feed = data.feed || [];
+      const result = feed.map(item => ({
+        title: item.title,
+        summary: item.summary,
+        url: item.url,
+        time: item.time_published,
+        sentiment: item.overall_sentiment_score,
+        relevance: item.relevance_score
+      }));
+      cache.set(cKey, result, CONFIG.CACHE_TTL_NEWS);
+      return result;
+    } catch (err) {
+      console.warn('News Fetch Fail:', err);
+      return [];
+    }
+  },
   scanWatchlist: async (symbols) => {
-    const headlines = []; // Mock news aggregation logic for browser
+    const globalNews = await window.SignalEngine.fetchNews();
     const signals = [];
     for (const sym of symbols) {
-      signals.push(await generateSignal(sym, { headlines }));
+      // Find headlines relevant to this symbol from global news or specific fetch
+      const relevant = globalNews.filter(n => n.title.includes(sym) || n.summary.includes(sym));
+      signals.push(await generateSignal(sym, { headlines: relevant }));
     }
     return signals;
   }

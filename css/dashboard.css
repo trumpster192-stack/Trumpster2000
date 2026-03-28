@@ -1,153 +1,317 @@
-/* Dashboard Styling Enhancements for Real Data Edition */
-
-/* Layout & Views */
+/* Dashboard Layout Overhaul */
 .dashboard-view {
-  min-height: calc(100vh - var(--header-height) - var(--nav-height) - 100px);
+  min-height: calc(100vh - var(--header-height) - 100px);
   padding: 0 var(--spacing-lg) 100px;
 }
 
-.full-view {
-  min-height: 500px;
-  padding: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-}
-
-.hidden { display: none !important; }
-
-/* Grid specific fixes */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 320px 1fr;
   grid-template-rows: auto 1fr;
   gap: var(--spacing-lg);
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
-.dashboard-sidebar { grid-row: 1 / span 2; }
-.signals-container { grid-column: 2; }
-.heatmap-container { grid-column: 2; margin-top: var(--spacing-lg); }
-
-/* Chart Styling */
-.chart-box {
-  width: 100%;
-  height: 500px;
-  background: rgba(0,0,0,0.5);
-  border: 1px dashed var(--gold-secondary);
-  border-radius: 8px;
+.dashboard-sidebar {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: var(--spacing-lg);
 }
 
-/* Sentiment Needle Widget */
+.widget {
+  padding: 20px;
+  min-height: 120px;
+}
+
+/* Matrix Terminal Effect */
+.matrix-panel {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border-color: #00FF41 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2) !important;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.matrix-text {
+  flex: 1;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.7rem;
+  color: #00FF41;
+  overflow-y: hidden;
+  line-height: 1.2;
+}
+
+.matrix-line {
+  margin-bottom: 4px;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* Signals Grid */
+.signals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.signal-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.signal-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  transform: skewX(-25deg);
+  animation: shine 4s infinite linear;
+}
+
+@keyframes shine {
+  to { left: 200%; }
+}
+
+.signal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.symbol-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.symbol-box {
+  background: var(--gold-primary);
+  color: #000;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  border-radius: 2px;
+}
+
+.symbol-name { font-size: 1.2rem; }
+
+.price-info { text-align: right; }
+
+.confidence-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.confidence-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.meter-outer {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.meter-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-secondary), var(--gold-primary));
+  box-shadow: var(--gold-glow);
+  transition: width 1s ease-out;
+}
+
+/* Heatmap Viz */
+.heatmap-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.heat-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  transition: transform 0.2s ease;
+}
+
+.heat-cell:hover { transform: scale(1.05); }
+
+.heat-positive { background: rgba(0, 255, 65, 0.2); border: 1px solid var(--success-green); color: var(--success-green); }
+.heat-negative { background: rgba(255, 49, 49, 0.2); border: 1px solid var(--error-red); color: var(--error-red); }
+.heat-neutral { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); color: #888; }
+
+/* Chart Styling */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.symbol-tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.sym-tab {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: #888;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.sym-tab.active {
+  border-color: var(--gold-primary);
+  color: var(--gold-primary);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.chart-box {
+  width: 100%;
+  height: 600px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Sentiment Engine Styling */
+.sentiment-dashboard {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: var(--spacing-lg);
+}
+
+.sentiment-meter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .sentiment-meter {
   position: relative;
   width: 300px;
   height: 150px;
   border-radius: 150px 150px 0 0;
   background: radial-gradient(circle at bottom, rgba(255, 215, 0, 0.1), transparent);
-  margin: 40px auto;
+  margin: 20px auto;
   overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
-#sentiment-needle {
+.needle {
   position: absolute;
   bottom: 0;
-  left: 50%;
+  left: calc(50% - 2px);
   width: 4px;
-  height: 100px;
-  background: var(--gold-primary);
+  height: 120px;
+  background: linear-gradient(to top, var(--gold-secondary), var(--gold-primary));
   box-shadow: var(--gold-glow);
-  transform-origin: bottom;
-  transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-origin: bottom center;
+  transform: rotate(0deg);
+  transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+  z-index: 5;
 }
 
-.sentiment-meter .label {
+.sentiment-meter::before {
+  content: '';
   position: absolute;
-  bottom: 10px;
-  width: 100%;
+  bottom: -10px;
+  left: calc(50% - 15px);
+  width: 30px;
+  height: 30px;
+  background: var(--navy-dark);
+  border: 4px solid var(--gold-primary);
+  border-radius: 50%;
+  z-index: 10;
+}
+
+.sentiment-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-card {
+  padding: 15px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
   text-align: center;
 }
 
-/* History & Trophy List */
-.history-list {
+.stat-card .label { display: block; font-size: 0.6rem; color: #888; margin-bottom: 5px; }
+.stat-card .val { font-size: 1.5rem; font-family: 'Orbitron', sans-serif; }
+
+.news-feed-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.news-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 20px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
-.history-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px;
-  background: rgba(255,255,255,0.05);
-  border-left: 4px solid var(--success-green);
-  border-radius: 4px;
+.news-item {
+  padding: 15px;
+  background: rgba(255,255,255,0.02);
+  border-left: 2px solid var(--gold-secondary);
+  transition: background 0.2s;
 }
 
-/* Settings */
-.settings-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 500px;
-  margin: 0 auto;
-}
+.news-item:hover { background: rgba(255,255,255,0.05); }
 
-.setting-item label {
+.news-title {
   display: block;
-  font-size: 0.75rem;
-  color: var(--gold-secondary);
+  font-weight: 700;
+  font-size: 0.9rem;
   margin-bottom: 5px;
 }
 
-.glass-input {
-  width: 100%;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--glass-border);
-  padding: 12px;
-  border-radius: 8px;
-  color: #fff;
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #666;
 }
 
-/* Nav Item Styling Fix */
-.nav-item {
-  color: #888;
-  cursor: pointer;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gold-secondary); border-radius: 2px; }
 
-.nav-item.active {
-  color: var(--gold-primary);
-  text-shadow: var(--gold-text-glow);
-}
-
-/* Loader Styles */
-.loader-placeholder {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 40px;
-  font-size: 1.2rem;
-  color: var(--gold-primary);
-  letter-spacing: 2px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { opacity: 0.3; }
-  50% { opacity: 1; }
-  100% { opacity: 0.3; }
-}
-
-/* Mobile Responsive Tweaks */
-@media (max-width: 900px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
+/* Mobile */
+@media (max-width: 1000px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
   .dashboard-sidebar { display: none; }
-  .signals-container { grid-column: 1; }
-  .heatmap-container { grid-column: 1; }
+  .sentiment-dashboard { grid-template-columns: 1fr; }
 }

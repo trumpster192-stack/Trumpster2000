@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  TRUMPSTER 2000 — app.js (Real Data Intelligence Edition)
+ *  TRUMPSTER 2000 — app.js (Magnificent Edition)
  *  The Greatest Application Logic Ever Built.
  * ============================================================
  */
@@ -9,139 +9,83 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize Lucide Icons
     lucide.createIcons();
 
-    // 2. Loading Wall Sequence
-    const wallGrid = document.getElementById('wall-bricks');
-    const loadingOverlay = document.getElementById('loading-overlay');
-    const appContainer = document.getElementById('app');
-    const secureBadge = document.getElementById('secure-badge');
-    const loadingText = document.getElementById('loading-text');
+    // 2. State & Constants
+    const WATCHLIST = ['DJT', 'NVDA', 'TSLA', 'SPY', 'QQQ', 'BTC-USD', 'ETH-USD', 'AAPL'];
+    let currentChartSymbol = 'DJT';
 
-    const TOTAL_BRICKS = 60;
-    for (let i = 0; i < TOTAL_BRICKS; i++) {
-        const brick = document.createElement('div');
-        brick.className = 'brick';
-        wallGrid.appendChild(brick);
+    // 3. Elements
+    const signalsFeed = document.getElementById('signals-feed');
+    const matrixTerminal = document.getElementById('matrix-terminal');
+    const scanStatus = document.getElementById('scan-status');
+    const newsFeed = document.getElementById('news-feed');
+    const appContainer = document.getElementById('app');
+
+    // 4. Matrix Intelligence Effect
+    const MATRIX_PHRASES = [
+      "> ESTABLISHING SATELLITE LINK...",
+      "> DECRYPTING MARKET SYMBOLS...",
+      "> INJECTING LIQUIDITY VECTORS...",
+      "> ANALYZING PATRIOT SENTIMENT...",
+      "> SCANNING FOR BEAR TRAPS...",
+      "> MAGA ENGINE AT 99.8% STABILITY...",
+      "> FLOW DETECTED: LARGE BUY ORDER...",
+      "> CALCULATING ALPHA VANTAGE METRICS...",
+      "> OPTIMIZING SIGNAL ACCURACY...",
+    ];
+
+    function startMatrixTerminal() {
+        setInterval(() => {
+            const line = document.createElement('div');
+            line.className = 'matrix-line';
+            line.textContent = MATRIX_PHRASES[Math.floor(Math.random() * MATRIX_PHRASES.length)];
+            matrixTerminal.prepend(line);
+            if (matrixTerminal.childNodes.length > 20) matrixTerminal.lastChild.remove();
+        }, 1500);
     }
 
-    const bricks = document.querySelectorAll('.brick');
-    let brickIndex = 0;
+    function updateScanStatus() {
+        const STATUSES = ['SCANNING...', 'ANALYZING...', 'SECURING...', 'OPTIMIZING...', 'WINNING...'];
+        let i = 0;
+        setInterval(() => {
+            scanStatus.textContent = STATUSES[i % STATUSES.length];
+            i++;
+        }, 3000);
+    }
 
-    const buildWall = setInterval(() => {
-        if (brickIndex < bricks.length) {
-            bricks[brickIndex].classList.add('active');
-            brickIndex++;
-        } else {
-            clearInterval(buildWall);
-            loadingText.classList.add('hidden');
-            secureBadge.classList.replace('hidden', 'slide-up');
-            
-            setTimeout(() => {
-                loadingOverlay.classList.add('slide-up');
-                setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                    checkRiskAcknowledgment();
-                }, 600);
-            }, 1000);
-        }
-    }, 40);
-
-    // 3. Tab Switching Intelligence
+    // 5. Navigation Logic
     const navItems = document.querySelectorAll('.nav-item');
     const views = document.querySelectorAll('.dashboard-view');
 
     navItems.forEach(item => {
         item.addEventListener('click', () => {
-            const targetViewId = `view-${item.dataset.view}`;
-            
-            // Switch tabs visual
+            const view = item.dataset.view;
             navItems.forEach(n => n.classList.remove('active'));
             item.classList.add('active');
 
-            // Switch views visual
-            views.forEach(section => {
-                section.classList.add('hidden');
-                if (section.id === targetViewId) {
-                    section.classList.remove('hidden');
-                    section.classList.add('slide-up');
+            views.forEach(v => {
+                v.classList.add('hidden');
+                if (v.id === `view-${view}`) {
+                    v.classList.remove('hidden');
+                    v.classList.add('slide-up');
                 }
             });
 
-            // Special logic for View-Chart
-            if (item.dataset.view === 'chart') {
-                loadTradingViewWidget();
-            }
-
-            // Special logic for View-Winning
-            if (item.dataset.view === 'winning') {
-                loadWinningsHistory();
-            }
+            if (view === 'chart') initTradingView(currentChartSymbol);
+            if (view === 'speech') loadRealNews();
+            if (view === 'winning') loadWinningsHistory();
         });
     });
 
-    // 4. Signal Engine Integration (Real Data)
-    const WATCHLIST = ['AAPL', 'MSFT', 'NVDA', 'TSLA', 'SPY', 'QQQ', 'DJT', 'BTC-USD'];
-    const signalsFeed = document.getElementById('signals-feed');
-
-    async function loadRealSignals() {
-        signalsFeed.innerHTML = '<div class="loader-placeholder">SCANNING MARKETS...</div>';
+    // 6. Signal Engine Integration
+    async function refreshDashboard() {
         try {
             const signals = await window.SignalEngine.scanWatchlist(WATCHLIST);
             renderSignals(signals);
             updateHeatmap(signals);
             updateSentiment(signals);
-            
-            // Persist Strong Signals to Supabase if connected
-            if (window.supabaseClient) {
-                const strongSignals = signals.filter(s => s.action.includes('STRONG'));
-                for (const sig of strongSignals) {
-                    await window.supabaseClient.from('signals_history').insert([{
-                        symbol: sig.symbol,
-                        action: sig.action,
-                        price: sig.price,
-                        confidence: sig.confidence,
-                        change_pct: sig.changePct,
-                        message: sig.message
-                    }]);
-                }
-            }
+            persistSignals(signals);
         } catch (err) {
-            console.error('Signal Scan Fail:', err);
-            signalsFeed.innerHTML = '<div class="no-data">WHATEVER HAPPENED TO THE CONNECTION? SAD!</div>';
-        }
-    }
-
-    async function loadWinningsHistory() {
-        const historyList = document.getElementById('win-history');
-        if (!window.supabaseClient) {
-            historyList.innerHTML = '<div class="no-data">OFFLINE MODE: NO SUPABASE CONNECTED.</div>';
-            return;
-        }
-
-        try {
-            const { data, error } = await window.supabaseClient
-                .from('winnings')
-                .select('*')
-                .order('timestamp', { ascending: false });
-
-            if (error) throw error;
-
-            if (data && data.length > 0) {
-                historyList.innerHTML = data.map(win => `
-                    <div class="history-item glass-panel gold-border">
-                        <div class="win-info">
-                            <span class="win-symbol">${win.symbol}</span>
-                            <span class="win-action">${win.action}</span>
-                        </div>
-                        <div class="win-profit text-green">+${win.profit_pct}%</div>
-                        <div class="win-date">${new Date(win.timestamp).toLocaleDateString()}</div>
-                    </div>
-                `).join('');
-            } else {
-                historyList.innerHTML = '<div class="no-data">NO WINNINGS YET. WE ARE GOING TO WIN SO MUCH YOU GET BORED OF WINNING!</div>';
-            }
-        } catch (err) {
-            console.error('Fetch Winnings Fail:', err);
-            historyList.innerHTML = '<div class="no-data">FAILED TO RETRIEVE THE TROPHY ROOM.</div>';
+            console.error('Telemetery Fail:', err);
         }
     }
 
@@ -171,66 +115,108 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    // 5. Heatmap Sync
     function updateHeatmap(signals) {
         const heatmap = document.getElementById('heatmap-viz');
         heatmap.innerHTML = signals.map(sig => {
             const type = sig.changePct > 2 ? 'heat-positive' : (sig.changePct < -2 ? 'heat-negative' : 'heat-neutral');
-            const size = Math.abs(sig.changePct) * 10 + 60;
-            return `
-              <div class="heat-cell ${type}" style="width: ${size}px; height: 60px;">
-                <div class="sym">${sig.symbol}</div>
-                <div class="perf">${sig.changePct >= 0 ? '+' : ''}${sig.changePct}%</div>
-              </div>
-            `;
+            const size = Math.min(100, Math.max(40, Math.abs(sig.changePct) * 10 + 60));
+            return `<div class="heat-cell ${type}" style="width: ${size}px; height: 60px;">
+                <span>${sig.symbol}</span>
+                <span style="font-size: 0.6rem">${sig.changePct}%</span>
+            </div>`;
         }).join('');
     }
 
-    // 6. Sentiment Hub logic
     function updateSentiment(signals) {
         const needle = document.getElementById('sentiment-needle');
-        const avgComposite = signals.reduce((sum, s) => sum + s.composite, 0) / signals.length;
-        // Map composite -100..100 to rotate -90 to 90
-        const rotation = (avgComposite / 100) * 90;
+        const moodLabel = document.getElementById('mood-label');
+        const avg = signals.reduce((sum, s) => sum + s.composite, 0) / signals.length;
+        
+        const rotation = (avg / 100) * 90;
         needle.style.transform = `rotate(${rotation}deg)`;
+        
+        if (avg > 40) moodLabel.textContent = 'EXTREME BULLISH';
+        else if (avg > 10) moodLabel.textContent = 'BULLISH';
+        else if (avg > -10) moodLabel.textContent = 'NEUTRAL';
+        else moodLabel.textContent = 'BEARISH';
     }
 
-    // 7. TradingView Widget Loader
-    function loadTradingViewWidget() {
-        const widgetContainer = document.getElementById('tradingview-widget');
-        if (widgetContainer.innerHTML !== '') return; // Already loaded
+    async function persistSignals(signals) {
+        if (!window.supabaseClient) return;
+        const strong = signals.filter(s => s.action.includes('STRONG'));
+        for (const s of strong) {
+            await window.supabaseClient.from('signals_history').insert([{
+                symbol: s.symbol, action: s.action, price: s.price, 
+                confidence: s.confidence, change_pct: s.changePct, message: s.message
+            }]);
+        }
+    }
 
+    // 7. News & Sentiment logic
+    async function loadRealNews() {
+        newsFeed.innerHTML = '<div class="loader-placeholder">FETCHING INTELLIGENCE...</div>';
+        try {
+            const news = await window.SignalEngine.fetchNews();
+            const bullCount = document.getElementById('bull-count');
+            const bearCount = document.getElementById('bear-count');
+            
+            let bulls = 0, bears = 0;
+            newsFeed.innerHTML = news.map(item => {
+                if (item.sentiment > 0.1) bulls++;
+                if (item.sentiment < -0.1) bears++;
+                return `
+                    <div class="news-item glass-panel">
+                        <a href="${item.url}" target="_blank" class="news-title">${item.title}</a>
+                        <div class="news-meta">
+                            <span>RELEVANCE: ${Math.round(item.relevance * 100)}%</span>
+                            <span class="${item.sentiment > 0 ? 'text-green' : 'text-red'}">SENTIMENT: ${item.sentiment}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            bullCount.textContent = bulls;
+            bearCount.textContent = bears;
+        } catch (err) {
+            newsFeed.innerHTML = '<div class="no-data">NEWS FEED OFFLINE.</div>';
+        }
+    }
+
+    // 8. Chart Logic
+    window.initTradingView = function(symbol) {
+        const container = document.getElementById('tradingview-widget');
+        container.innerHTML = '';
         const script = document.createElement('script');
-        script.type = 'text/javascript';
         script.src = 'https://s3.tradingview.com/tv.js';
         script.onload = () => {
             new TradingView.widget({
+                "container_id": "tradingview-widget",
                 "width": "100%",
-                "height": 400,
-                "symbol": "NASDAQ:AAPL",
+                "height": "100%",
+                "symbol": symbol.includes('USD') ? `CRYPTO:${symbol.replace('-','')}` : `NASDAQ:${symbol}`,
                 "interval": "D",
                 "timezone": "Etc/UTC",
                 "theme": "dark",
                 "style": "1",
                 "locale": "en",
-                "toolbar_bg": "#f1f3f6",
                 "enable_publishing": false,
-                "hide_side_toolbar": false,
                 "allow_symbol_change": true,
-                "container_id": "tradingview-widget"
             });
         };
         document.body.appendChild(script);
-    }
+    };
 
-    // 8. Global Updates
-    function startLiveTelemetry() {
-        loadRealSignals();
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-        setInterval(loadRealSignals, 60000 * 5); // Scan every 5 mins to respect AV quota
-    }
+    const symTabs = document.querySelectorAll('.sym-tab');
+    symTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            symTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentChartSymbol = tab.dataset.symbol;
+            initTradingView(currentChartSymbol);
+        });
+    });
 
+    // 9. Countdown
     function updateCountdown() {
         const now = new Date();
         const target = new Date();
@@ -239,11 +225,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
         const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
         const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-        const display = document.getElementById('countdown-display');
-        display.innerHTML = `<span class="digit">${h}</span>:<span class="digit">${m}</span>:<span class="digit">${s}</span>`;
+        document.getElementById('countdown-display').innerHTML = `<span class="digit">${h}</span>:<span class="digit">${m}</span>:<span class="digit">${s}</span>`;
     }
 
-    // 9. Enter Sequence logic
+    // 10. Initialization
+    function startApp() {
+        startMatrixTerminal();
+        updateScanStatus();
+        refreshDashboard();
+        setInterval(refreshDashboard, 60000 * 5);
+        setInterval(updateCountdown, 1000);
+    }
+
+    // Modal Entrance
     const riskCheck = document.getElementById('risk-check');
     const enterBtn = document.getElementById('enter-btn');
     const riskModal = document.getElementById('risk-modal');
@@ -257,10 +251,31 @@ document.addEventListener('DOMContentLoaded', () => {
         riskModal.style.display = 'none';
         appContainer.classList.remove('hidden');
         appContainer.classList.add('slide-up');
-        startLiveTelemetry();
+        startApp();
     });
 
-    function checkRiskAcknowledgment() {
-        riskModal.style.display = 'flex';
+    // Wall Animation
+    const wallGrid = document.getElementById('wall-bricks');
+    for (let i = 0; i < 40; i++) {
+        const brick = document.createElement('div');
+        brick.className = 'brick';
+        wallGrid.appendChild(brick);
     }
+    const bricks = document.querySelectorAll('.brick');
+    let bIdx = 0;
+    const buildInt = setInterval(() => {
+        if (bIdx < bricks.length) bricks[bIdx++].classList.add('active');
+        else {
+            clearInterval(buildInt);
+            document.getElementById('loading-text').classList.add('hidden');
+            document.getElementById('secure-badge').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('loading-overlay').classList.add('slide-up');
+                setTimeout(() => {
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    riskModal.style.display = 'flex';
+                }, 600);
+            }, 1000);
+        }
+    }, 50);
 });

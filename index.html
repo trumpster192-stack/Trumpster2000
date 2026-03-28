@@ -30,9 +30,15 @@
                 <img src="assets/logo.png" alt="Logo" class="app-logo">
                 <span class="text-gradient">TRUMPSTER <span class="text-gold">2000</span></span>
             </div>
+            <div class="header-center">
+              <div class="scan-bar">
+                <div class="scan-line"></div>
+                <span id="scan-status">SCANNING MARKETS...</span>
+              </div>
+            </div>
             <div class="market-status glass-panel">
                 <div class="status-dot pulse-green"></div>
-                <span class="status-label">WALL ST: <span class="text-gold" id="market-status">FETCHING...</span></span>
+                <span class="status-label">ANTIGRAVITY: <span class="text-gold" id="market-status">OPTIMIZED</span></span>
             </div>
         </header>
 
@@ -40,27 +46,32 @@
         <main id="view-dashboard" class="dashboard-view">
             <div class="dashboard-grid">
               <aside class="dashboard-sidebar">
-                  <div class="glass-panel countdown-widget gold-border">
-                      <h3>SPEECH COUNTDOWN</h3>
+                  <div class="glass-panel widget gold-border">
+                      <h3 class="widget-header"><i data-lucide="clock"></i> SPEECH COUNTDOWN</h3>
                       <div id="countdown-display" class="countdown-7segment">
                           <span class="digit">00</span>:<span class="digit">00</span>:<span class="digit">00</span>
                       </div>
-                      <p class="countdown-label">TIME UNTIL NEXT MARKET RALLY</p>
+                      <p class="countdown-label">TIME UNTIL MASSIVE RALLY</p>
+                  </div>
+                  
+                  <div class="glass-panel widget matrix-panel">
+                      <h3 class="widget-header"><i data-lucide="terminal"></i> TELEMETRY FLOW</h3>
+                      <div id="matrix-terminal" class="matrix-text"></div>
                   </div>
               </aside>
 
               <section class="signals-container">
                   <div class="section-header">
-                      <h2>EXCLUSIVE SIGNALS <span class="badge red pulse-red">REAL-TIME</span></h2>
+                      <h2>ULTIMATE SIGNALS <span class="badge gold pulse-gold">REAL-TIME DATA</span></h2>
                   </div>
                   <div id="signals-feed" class="signals-grid">
                       <!-- Signals from real APIs -->
-                      <div class="loader-placeholder">SCANNING MARKETS...</div>
+                      <div class="loader-placeholder">CALCULATING DOMINANCE...</div>
                   </div>
               </section>
 
               <section class="heatmap-container glass-panel">
-                <div class="section-header"><h2>MARKET HEATMAP</h2></div>
+                <div class="section-header"><h2>MARKET DOMINANCE MAP</h2></div>
                 <div id="heatmap-viz" class="heatmap-body"></div>
               </section>
             </div>
@@ -68,24 +79,40 @@
 
         <main id="view-chart" class="dashboard-view hidden">
             <div class="glass-panel full-view gold-border">
-                <h2>MARKET TELEMETRY</h2>
+                <div class="section-header">
+                  <h2>MARKET TELEMETRY</h2>
+                  <div id="symbol-picker" class="symbol-tabs">
+                    <button class="sym-tab active" data-symbol="DJT">DJT</button>
+                    <button class="sym-tab" data-symbol="BTCUSD">BTC</button>
+                    <button class="sym-tab" data-symbol="NVDA">NVDA</button>
+                    <button class="sym-tab" data-symbol="TSLA">TSLA</button>
+                  </div>
+                </div>
                 <div id="tradingview-widget" class="chart-box">
-                  <!-- TradingView Widget Hook -->
-                  <div class="no-data">TRADINGVIEW TELEMETRY LOADING...</div>
+                  <div class="loader-placeholder">ESTABLISHING SATELLITE LINK...</div>
                 </div>
             </div>
         </main>
 
         <main id="view-speech" class="dashboard-view hidden">
             <div class="glass-panel full-view gold-border">
-                <h2>SPEECH SENTIMENT ENGINE</h2>
+                <div class="section-header"><h2>SENTIMENT INTELLIGENCE ENGINE</h2></div>
                 <div class="sentiment-dashboard">
-                    <div class="sentiment-meter gold-border">
-                        <div id="sentiment-needle" class="needle" style="transform: rotate(45deg);"></div>
-                        <div class="label">MAGA SENTIMENT: <span class="text-gold">MAX OVERDRIVE</span></div>
+                    <div class="sentiment-meter-container">
+                      <div class="sentiment-meter gold-border">
+                          <div id="sentiment-needle" class="needle"></div>
+                          <div class="label">MARKET MOOD: <span class="text-gold" id="mood-label">NEUTRAL</span></div>
+                      </div>
+                      <div class="sentiment-stats">
+                        <div class="stat-card"><span class="label">BULLISH HEADLINES</span><span id="bull-count" class="val text-green">0</span></div>
+                        <div class="stat-card"><span class="label">BEARISH HEADLINES</span><span id="bear-count" class="val text-red">0</span></div>
+                      </div>
                     </div>
-                    <div id="news-feed" class="news-list">
-                      <!-- Real News Feed -->
+                    <div class="news-feed-container">
+                      <h3><i data-lucide="rss"></i> LIVE INTELLIGENCE FEED</h3>
+                      <div id="news-feed" class="news-list">
+                        <!-- Real News Feed -->
+                      </div>
                     </div>
                 </div>
             </div>
