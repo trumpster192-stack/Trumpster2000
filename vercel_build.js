@@ -1,25 +1,25 @@
 const fs = require('fs');
 const path = require('path');
 
-// 1. Create a "dist" output folder (Vercel standard)
-const distDir = path.join(__dirname, 'dist');
-if (fs.existsSync(distDir)) {
-    fs.rmSync(distDir, { recursive: true, force: true });
+// 1. Create a "public" output folder (The most common Vercel standard)
+const outputDir = path.join(__dirname, 'public');
+if (fs.existsSync(outputDir)) {
+    fs.rmSync(outputDir, { recursive: true, force: true });
 }
-fs.mkdirSync(distDir);
+fs.mkdirSync(outputDir);
 
-// 2. Copy the project files to "dist"
-const filesToWorkWith = ['assets', 'css', 'js', 'index.html'];
+// 2. Copy the project files to "public"
+const filesToWorkWith = ['assets', 'css', 'js', 'index.html', 'vercel.json'];
 filesToWorkWith.forEach(item => {
     const srcPath = path.join(__dirname, item);
-    const destPath = path.join(distDir, item);
+    const destPath = path.join(outputDir, item);
     if (fs.existsSync(srcPath)) {
         fs.cpSync(srcPath, destPath, { recursive: true });
     }
 });
 
-// 3. Perform the secret injection in the final "dist" folder
-const configPath = path.join(distDir, 'js', 'config.js');
+// 3. Perform the secret injection in the final "public" folder
+const configPath = path.join(outputDir, 'js', 'config.js');
 if (fs.existsSync(configPath)) {
     let content = fs.readFileSync(configPath, 'utf8');
 
@@ -31,9 +31,9 @@ if (fs.existsSync(configPath)) {
     content = content.replace(/__SUPABASE_ANON_KEY__/g, supabaseKey);
 
     fs.writeFileSync(configPath, content);
-    console.log('MAGA: Supabase Secrets Injected Successfully in dist/js/config.js.');
+    console.log('MAGA: Supabase Secrets Injected Successfully in public/js/config.js.');
 } else {
     console.error('MAGA: config.js NOT FOUND! SHAMEFUL!');
 }
 
-console.log('MAGA: Build completed. Output is in "dist" folder.');
+console.log('MAGA: Build completed. Output is in "public" folder.');
