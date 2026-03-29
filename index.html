@@ -40,7 +40,7 @@
             <div class="logo-container">
                 <img src="assets/logo.png" alt="Trumpster 2000" class="app-logo">
                 <div class="logo-text">
-                    <span class="text-gradient">TRUMPSTER <span class="text-gold">2000</span></span>
+                    <span class="text-gradient" onclick="showView('dashboard')" style="cursor:pointer">TRUMPSTER <span class="text-gold">2000</span></span>
                     <button class="hero-cta gold-button" onclick="showView('plans')">GET ALPHA NOW</button>
                 </div>
             </div>
@@ -59,10 +59,10 @@
         <!-- Sticky Navigation Dock (Desktop/Mobile) -->
         <nav class="sticky-nav glass-panel">
             <div class="nav-links">
-                <a href="#signals-feed"><i data-lucide="radio"></i> SIGNALS</a>
-                <a href="#tradingview-widget"><i data-lucide="candlestick-chart"></i> CHARTS</a>
-                <a href="#sentiment-dashboard"><i data-lucide="mic"></i> SPEECH</a>
-                <a href="#view-plans"><i data-lucide="crown"></i> PRO TIER</a>
+                <a href="javascript:void(0)" onclick="handleStickyNav('dashboard', 'signals-feed')"><i data-lucide="radio"></i> SIGNALS</a>
+                <a href="javascript:void(0)" onclick="handleStickyNav('chart', 'tradingview-widget')"><i data-lucide="candlestick-chart"></i> CHARTS</a>
+                <a href="javascript:void(0)" onclick="handleStickyNav('speech', 'sentiment-dashboard')"><i data-lucide="mic"></i> SPEECH</a>
+                <a href="javascript:void(0)" onclick="showView('plans')"><i data-lucide="crown"></i> PRO TIER</a>
             </div>
         </nav>
 

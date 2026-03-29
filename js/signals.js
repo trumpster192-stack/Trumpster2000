@@ -57,10 +57,14 @@ const cache = new Cache();
 
 // ─── Browser Fetch Helpers ─────────────────────────────
 async function fetchJSON(url) {
+  // Use CORS proxy for known external domains that block browser requests
+  const isExternal = url.includes('stlouisfed.org') || url.includes('politico.com') || url.includes('cointelegraph.com') || url.includes('goldbroker.com');
+  const finalUrl = isExternal ? `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}` : url;
+  
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
   try {
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(finalUrl, { signal: controller.signal });
     clearTimeout(id);
     if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
     return await response.json();
@@ -71,6 +75,9 @@ async function fetchJSON(url) {
 }
 
 async function fetchText(url) {
+  const isExternal = url.includes('stlouisfed.org') || url.includes('politico.com') || url.includes('cointelegraph.com') || url.includes('goldbroker.com');
+  const finalUrl = isExternal ? `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}` : url;
+
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
   try {
@@ -135,10 +142,13 @@ const avLimiter = new RateLimiter(CONFIG.RATE_LIMIT_MS);
 // ═══════════════════════════════════════════════════════════════
 
 async function fetchAlphaVantageQuote(symbol) {
-  const cKey = `av:quote:${symbol}`;
+  const symMap = { 'GC=F': 'GLD', 'CL=F': 'USO', 'SI=F': 'SLV', 'HG=F': 'CPER' };
+  const targetSymbol = symMap[symbol] || symbol;
+
+  const cKey = `av:quote:${targetSymbol}`;
   const hit = cache.get(cKey);
   if (hit) return hit;
-  const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(symbol)}&apikey=${CONFIG.ALPHA_VANTAGE_KEY}`;
+  const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(targetSymbol)}&apikey=${CONFIG.ALPHA_VANTAGE_KEY}`;
   const data = await avLimiter.schedule(() => fetchJSON(url));
   const q = data['Global Quote'] || {};
   const result = {
@@ -154,10 +164,15 @@ async function fetchAlphaVantageQuote(symbol) {
 
 async function fetchFinnhubQuote(symbol) {
   if (!CONFIG.FINNHUB_KEY) return null;
-  const cKey = `fh:quote:${symbol}`;
+  
+  // Mapping for Commodities (Patriot Edition)
+  const symMap = { 'GC=F': 'GLD', 'CL=F': 'USO', 'SI=F': 'SLV', 'HG=F': 'CPER' };
+  const targetSymbol = symMap[symbol] || symbol;
+
+  const cKey = `fh:quote:${targetSymbol}`;
   const hit = cache.get(cKey);
   if (hit) return hit;
-  const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${CONFIG.FINNHUB_KEY}`;
+  const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(targetSymbol)}&token=${CONFIG.FINNHUB_KEY}`;
   const q = await fetchJSON(url);
   const result = {
     symbol,
@@ -184,10 +199,13 @@ async function fetchCryptoPrice(coinId) {
 
 async function fetchPolygonQuote(symbol) {
   if (!CONFIG.POLYGON_KEY) return null;
-  const cKey = `poly:quote:${symbol}`;
+  const symMap = { 'GC=F': 'GLD', 'CL=F': 'USO', 'SI=F': 'SLV', 'HG=F': 'CPER' };
+  const targetSymbol = symMap[symbol] || symbol;
+
+  const cKey = `poly:quote:${targetSymbol}`;
   const hit = cache.get(cKey);
   if (hit) return hit;
-  const url = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${encodeURIComponent(symbol)}?apiKey=${CONFIG.POLYGON_KEY}`;
+  const url = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${encodeURIComponent(targetSymbol)}?apiKey=${CONFIG.POLYGON_KEY}`;
   try {
     const data = await fetchJSON(url);
     const snap = data.ticker || {};
@@ -336,7 +354,11 @@ window.SignalEngine = {
     if (hit) return hit;
 
     let url = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey=${CONFIG.ALPHA_VANTAGE_KEY}`;
-    if (symbol) url += `&tickers=${encodeURIComponent(symbol)}`;
+    if (symbol) {
+        const symMap = { 'GC=F': 'GLD', 'CL=F': 'USO', 'SI=F': 'SLV', 'HG=F': 'CPER' };
+        const targetSymbol = symMap[symbol] || symbol;
+        url += `&tickers=${encodeURIComponent(targetSymbol)}`;
+    }
     
     try {
       const data = await avLimiter.schedule(() => fetchJSON(url));

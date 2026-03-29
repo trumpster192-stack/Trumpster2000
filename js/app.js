@@ -18,7 +18,8 @@ const AppState = {
         'https://rss.politico.com/donald-trump.xml',
         'https://cointelegraph.com/rss',
         'https://goldbroker.com/news.rss'
-    ]
+    ],
+    currentChartSymbol: 'DJT' // Global scoping fix
 };
 
 // View Management System (ADDED FOR RESPONSIVE NAVIGATION)
@@ -60,7 +61,7 @@ function showView(viewName) {
     }
 
     // Trigger view-specific initializations (FROM ORIGINAL)
-    if (viewName === 'chart') initTradingView(currentChartSymbol);
+    if (viewName === 'chart') initTradingView(AppState.currentChartSymbol);
     if (viewName === 'speech') loadRealNews();
     if (viewName === 'winning') loadWinningsHistory();
     if (typeof SoundEngine !== 'undefined') SoundEngine.scan();
@@ -76,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'BTC-USD', 'ETH-USD',
         'CL=F', 'GC=F', 'SI=F', 'HG=F' // Crude Oil, Gold, Silver, Copper
     ];
-    let currentChartSymbol = 'DJT';
+    // currentChartSymbol moved to AppState
 
     // 3. Elements (FROM ORIGINAL)
     const signalsFeed = document.getElementById('signals-feed');
@@ -523,6 +524,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Prevent pull-to-refresh on mobile
     document.body.style.overscrollBehavior = 'none';
+
+    // Patriot Functions: Reset the Wall & Navigation
+    window.resetWall = function() {
+        const overlay = document.getElementById('loading-overlay');
+        const bricks = document.querySelectorAll('.brick');
+        if (!overlay) return;
+
+        // Confetti Burst
+        createConfetti();
+
+        // Reset Bricks
+        bricks.forEach(b => b.classList.remove('active'));
+        overlay.style.display = 'flex';
+        overlay.classList.remove('slide-up');
+        document.getElementById('loading-text').classList.remove('hidden');
+        document.getElementById('secure-badge').classList.add('hidden');
+
+        let bIdx = 0;
+        const buildInt = setInterval(() => {
+            if (bIdx < bricks.length) bricks[bIdx++].classList.add('active');
+            else {
+                clearInterval(buildInt);
+                document.getElementById('loading-text').classList.add('hidden');
+                document.getElementById('secure-badge').classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.add('slide-up');
+                    setTimeout(() => { overlay.style.display = 'none'; }, 600);
+                }, 1000);
+            }
+        }, 3000 / bricks.length);
+    };
+
+    window.handleStickyNav = function(view, anchor) {
+        if (AppState.currentView !== view) {
+            showView(view);
+        }
+        if (anchor) {
+            setTimeout(() => {
+                const el = document.getElementById(anchor);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    };
+
+    function createConfetti() {
+        const colors = ['#FFD700', '#B22234', '#3C3B6E', '#FFFFFF'];
+        for (let i = 0; i < 50; i++) {
+            const c = document.createElement('div');
+            c.className = 'confetti';
+            c.style.left = Math.random() * 100 + 'vw';
+            c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            c.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            c.style.opacity = Math.random();
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 5000);
+        }
+    }
 });
 
 // Service Worker Registration (for PWA) (ADDED)
