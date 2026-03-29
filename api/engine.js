@@ -92,7 +92,8 @@ export default async function handler(req, res) {
     const macroScore = await fetchFredMacro();
 
     // 3. Process Watchlist Signals
-    const symbols = ['DJT', 'BTC-USD', 'ETH-USD', 'GC=F', 'CL=F', 'AAPL', 'MSFT', 'NVDA', 'TSLA', 'SPY'];
+    // FULL watchlist — must match WATCHLIST in app.js exactly
+    const symbols = ['DJT', 'NVDA', 'TSLA', 'AAPL', 'SPY', 'QQQ', 'BTC-USD', 'ETH-USD', 'CL=F', 'GC=F', 'SI=F', 'HG=F'];
     const coinMap = { 'BTC-USD':'bitcoin', 'ETH-USD':'ethereum' };
     
     const signals = await Promise.all(symbols.map(async (sym) => {
