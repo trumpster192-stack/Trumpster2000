@@ -9,13 +9,7 @@ window.TRUMPSTER_CONFIG = {
     // These will be replaced by Vercel environment variables during build
     // Or you can manually replace them for local testing.
     SUPABASE_URL      : 'https://jjcplqmdlbzkaxhkfdli.supabase.co',
-    SUPABASE_ANON_KEY : 'sb_publishable_42sD3WdanDiRF_Ca7OqfAA_jLXJhHXs',
-    
-    // API Keys (Placeholders for Vercel)
-    VANTAGE_KEY       : '0AQFRLJK08VO4WZV',
-    FINNHUB_KEY       : 'd73vkbhr01qno4pvskt0d73vkbhr01qno4pvsktg',
-    POLYGON_KEY       : 'a8aMBxrSJnA5JypSfnfXzWHYj57X3AGe',
-    FRED_KEY          : '48bf00ac5df3a0548ae2df72648a0de8'
+    SUPABASE_ANON_KEY : 'sb_publishable_42sD3WdanDiRF_Ca7OqfAA_jLXJhHXs'
 };
 
 // Unconditionally initialize Supabase to prevent Vercel environment replacement bugs

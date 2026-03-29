@@ -15,23 +15,28 @@ export default async function handler(req, res) {
     // The token you provided
     const TELEGRAM_BOT_TOKEN = '8605633941:AAGL_FKPoYBdDKpUivntEjiaRE04yRM8VeU';
     
-    // Fallback logic: check env var first, otherwise default to auto-discovery
-    let targetChatId = process.env.TELEGRAM_CHAT_ID || null; 
+    // Fallback logic: check env var first, otherwise default to the public channel
+    let targetChatId = process.env.TELEGRAM_CHAT_ID || '@trumpster2000'; 
 
-    // Auto-Discovery: If no Chat ID is set, check the bot's unread messages!
+    // Auto-Discovery: Only run if targetChatId is somehow missing or set to the old default
     if (!targetChatId || targetChatId.includes('_bot')) {
       try {
         const updateRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
         const updateData = await updateRes.json();
         if (updateData.ok && updateData.result.length > 0) {
-          // Grab the Chat ID of the last person who messaged the bot (e.g. sent /status)
-          targetChatId = updateData.result[updateData.result.length - 1].message.chat.id;
+          // Find the most recent update with a valid chat_id (Handles DMs, Channel Posts, and Joining Channels)
+          const lastUpdate = updateData.result[updateData.result.length - 1];
+          if (lastUpdate.message) targetChatId = lastUpdate.message.chat.id;
+          else if (lastUpdate.channel_post) targetChatId = lastUpdate.channel_post.chat.id;
+          else if (lastUpdate.my_chat_member) targetChatId = lastUpdate.my_chat_member.chat.id;
+          
+          if (!targetChatId) throw new Error("Could not parse Chat ID from Telegram update event.");
           console.log("MAGA: Auto-discovered Telegram Chat ID:", targetChatId);
         } else {
           throw new Error("No recent messages found to auto-discover Chat ID.");
         }
       } catch (err) {
-        return res.status(400).json({ error: "Please send a message to the bot first to initialize it." });
+        return res.status(400).json({ error: "Failed Auto-Discovery. Tip: Send a message inside your channel first!", details: err.message });
       }
     }
 
@@ -53,7 +58,11 @@ export default async function handler(req, res) {
       throw new Error(`Telegram API Error: ${tgError}`);
     }
 
-    res.status(200).json({ success: true, message: 'Broadcast successful' });
+    res.status(200).json({ 
+      success: true, 
+      message: 'Broadcast successful',
+      discovered_chat_id: targetChatId 
+    });
   } catch (error) {
     console.error('Telegram Broadcast Error:', error.message);
     res.status(500).json({ error: error.message });

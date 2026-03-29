@@ -346,15 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadRealNews() {
         newsFeed.innerHTML = '<div class="loader-placeholder">FETCHING INTELLIGENCE...</div>';
         try {
-            // Aggregate RSS feeds
-            let allItems = [];
-            for (const url of AppState.rssFeeds) {
-                const items = await window.SignalEngine.fetchNewsFromRSS(url);
-                allItems = [...allItems, ...items];
+            // Use the Centralized Cache Engine to draw News
+            let allItems = window.MAGA_NEWS_CACHE || [];
+            if (!allItems.length) {
+                // Fallback: If they clicked News before the Dashboard Engine finished, manually ping the Engine
+                const res = await fetch('/api/engine');
+                const data = await res.json();
+                allItems = data.news || [];
+                window.MAGA_NEWS_CACHE = allItems;
             }
-
-            // Shuffle or sort by date if available
-            allItems = allItems.slice(0, 15); // Top 15
 
             const bullCount = document.getElementById('bull-count');
             const bearCount = document.getElementById('bear-count');
@@ -362,32 +362,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let bulls = 0, bears = 0;
             newsFeed.innerHTML = allItems.map(item => {
-                const sentiment = window.SignalEngine.scoreText(item.title);
+                const sentiment = item.sentiment || 0;
                 if (sentiment > 5) bulls++;
                 if (sentiment < -5) bears++;
-
-                // Trigger Telegram on EXTREME news
-                if (sentiment > 10 || sentiment < -10) {
-                    const tag = sentiment > 0 ? 'bullish' : 'bearish';
-                    const emoji = sentiment > 0 ? '🚀' : '🩸';
-                    const tgMsg = `🚨 <b>BREAKING: EXTREME ${tag.toUpperCase()} NEWS</b> ${emoji}\n\n` +
-                                  `📰 <b>Headline:</b> ${item.title}\n` +
-                                  `🔥 <b>Sentiment Score:</b> ${sentiment}\n` +
-                                  `🔗 <a href="${item.link}">Read Full Intel</a>`;
-                    
-                    // Use the article link as the unique ID for the 4-hour cooldown
-                    const msgId = btoa(item.link).slice(0, 15);
-                    if (window.SignalEngine.triggerTelegramAlert) {
-                        window.SignalEngine.triggerTelegramAlert(msgId, tgMsg, true);
-                    }
-                }
 
                 return `
                     <div class="news-item glass-panel">
                         <a href="${item.link}" target="_blank" class="news-title">${item.title}</a>
                         <div class="news-meta">
                             <span>SOURCE: PATRIOT INTEL</span>
-                            <span class="${sentiment > 0 ? 'text-green' : (sentiment < 0 ? 'text-red' : '')}">SENTIMENT: ${sentiment > 0 ? '+' : ''}${sentiment}</span>
+                            <span class="${sentiment > 0 ? 'text-green' : (sentiment < 0 ? 'text-red' : '')}">SENTIMENT: ${sentiment > 0 ? '+' : ''}${Math.round(sentiment)}</span>
                         </div>
                     </div>
                 `;
