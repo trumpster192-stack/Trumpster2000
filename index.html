@@ -312,7 +312,7 @@
                       <button class="sym-tab" data-symbol="NVDA">NVDA</button>
                       <button class="sym-tab" data-symbol="TSLA">TSLA</button>
                       <button class="sym-tab" data-symbol="GLD">GOLD</button>
-                      <button class="sym-tab" data-symbol="CL=F">OIL</button>
+                      <button class="sym-tab" data-symbol="USO">OIL</button>
                   </div>
                 </div>
                 <div id="tradingview-widget" class="chart-box">
@@ -323,10 +323,10 @@
                     </div>
                 </div>
                 <div class="chart-controls">
-                    <button class="sym-tab active">1H</button>
-                    <button class="sym-tab">4H</button>
-                    <button class="sym-tab">1D</button>
-                    <button class="sym-tab">1W</button>
+                    <button class="sym-tab active" onclick="changeChartInterval('60')">1H</button>
+                    <button class="sym-tab" onclick="changeChartInterval('240')">4H</button>
+                    <button class="sym-tab" onclick="changeChartInterval('D')">1D</button>
+                    <button class="sym-tab" onclick="changeChartInterval('W')">1W</button>
                 </div>
             </div>
         </main>
