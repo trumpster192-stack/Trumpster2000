@@ -436,14 +436,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof SoundEngine !== 'undefined') SoundEngine.play(600, 'triangle', 0.1);
     };
 
-    const symTabs = document.querySelectorAll('.sym-tab');
+    const symTabs = document.querySelectorAll('#symbol-picker .sym-tab');
     symTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             symTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            currentChartSymbol = tab.dataset.symbol;
-            initTradingView(currentChartSymbol);
-            SoundEngine.play(440, 'triangle', 0.1);
+            AppState.currentChartSymbol = tab.dataset.symbol;
+            initTradingView(AppState.currentChartSymbol, AppState.currentChartInterval);
+            if (typeof SoundEngine !== 'undefined') SoundEngine.play(440, 'triangle', 0.1);
         });
     });
 
@@ -490,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startMatrixTerminal();
         updateScanStatus();
         refreshDashboard();
-        initTradingView(currentChartSymbol); 
+        initTradingView(AppState.currentChartSymbol, AppState.currentChartInterval); 
         setInterval(refreshDashboard, 60000 * 5);
         AppState.countdownInterval = setInterval(updateCountdown, 1000);
     }

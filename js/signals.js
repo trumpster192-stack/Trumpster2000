@@ -81,9 +81,9 @@ async function fetchText(url) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
   try {
-    // CORS proxy fallback (if needed, users can provide their own)
+    // CORS proxy fallback
     // For now direct fetch
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(finalUrl, { signal: controller.signal });
     clearTimeout(id);
     if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
     return await response.text();
