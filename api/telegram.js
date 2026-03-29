@@ -15,9 +15,25 @@ export default async function handler(req, res) {
     // The token you provided
     const TELEGRAM_BOT_TOKEN = '8605633941:AAGL_FKPoYBdDKpUivntEjiaRE04yRM8VeU';
     
-    // We pull the Chat ID from Vercel's Environment Variables.
-    // Replace this fallback with your actual numerical Chat ID for local testing.
-    const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '@Trumpster2000_bot'; 
+    // Fallback logic: check env var first, otherwise default to auto-discovery
+    let targetChatId = process.env.TELEGRAM_CHAT_ID || null; 
+
+    // Auto-Discovery: If no Chat ID is set, check the bot's unread messages!
+    if (!targetChatId || targetChatId.includes('_bot')) {
+      try {
+        const updateRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates`);
+        const updateData = await updateRes.json();
+        if (updateData.ok && updateData.result.length > 0) {
+          // Grab the Chat ID of the last person who messaged the bot (e.g. sent /status)
+          targetChatId = updateData.result[updateData.result.length - 1].message.chat.id;
+          console.log("MAGA: Auto-discovered Telegram Chat ID:", targetChatId);
+        } else {
+          throw new Error("No recent messages found to auto-discover Chat ID.");
+        }
+      } catch (err) {
+        return res.status(400).json({ error: "Please send a message to the bot first to initialize it." });
+      }
+    }
 
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
@@ -25,7 +41,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
+        chat_id: targetChatId,
         text: message,
         parse_mode: 'HTML' // Allow bolding and emojis in the message
       })
