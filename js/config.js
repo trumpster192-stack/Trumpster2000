@@ -9,7 +9,7 @@ window.TRUMPSTER_CONFIG = {
     // These will be replaced by Vercel environment variables during build
     // Or you can manually replace them for local testing.
     SUPABASE_URL      : 'https://jjcplqmdlbzkaxhkfdli.supabase.co',
-    SUPABASE_ANON_KEY : 'sb_secret_p0ivG9uPo5pfyiglYyIqnw_BsJz4o89',
+    SUPABASE_ANON_KEY : 'sb_publishable_42sD3WdanDiRF_Ca7OqfAA_jLXJhHXs',
     
     // API Keys (Placeholders for Vercel)
     VANTAGE_KEY       : '0AQFRLJK08VO4WZV',
@@ -20,7 +20,7 @@ window.TRUMPSTER_CONFIG = {
 
 // Unconditionally initialize Supabase to prevent Vercel environment replacement bugs
 const supaUrl = window.TRUMPSTER_CONFIG.SUPABASE_URL !== '__SUPABASE_URL__' ? window.TRUMPSTER_CONFIG.SUPABASE_URL : 'https://jjcplqmdlbzkaxhkfdli.supabase.co';
-const supaKey = window.TRUMPSTER_CONFIG.SUPABASE_ANON_KEY !== '__SUPABASE_ANON_KEY__' ? window.TRUMPSTER_CONFIG.SUPABASE_ANON_KEY : 'sb_secret_p0ivG9uPo5pfyiglYyIqnw_BsJz4o89';
+const supaKey = window.TRUMPSTER_CONFIG.SUPABASE_ANON_KEY !== '__SUPABASE_ANON_KEY__' ? window.TRUMPSTER_CONFIG.SUPABASE_ANON_KEY : 'sb_publishable_42sD3WdanDiRF_Ca7OqfAA_jLXJhHXs';
 
 try {
     window.supabaseClient = supabase.createClient(supaUrl, supaKey);
