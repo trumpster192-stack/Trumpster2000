@@ -278,6 +278,26 @@ function aggregateSentiment(headlines) {
 // MODULE 3 — MAIN ENGINE (generateSignal)
 // ═══════════════════════════════════════════════════════════════
 
+async function triggerTelegramAlert(msgId, message, isNews = false) {
+  const cdKey = `tg_cooldown_${msgId}`;
+  const now = Date.now();
+  const lastSent = localStorage.getItem(cdKey);
+  
+  // 4 hour cooldown per specific signal/news item
+  if (lastSent && now - parseInt(lastSent) < 14400000) return;
+
+  try {
+    await fetch('/api/telegram', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+    localStorage.setItem(cdKey, now.toString());
+  } catch (err) {
+    console.error('Failed to trigger Telegram alert:', err);
+  }
+}
+
 async function generateSignal(symbol, ctx = {}) {
   const isCrypto = symbol.includes('-USD') || symbol.includes('USDT');
   const cleanSym = symbol.replace('-USD','');
@@ -328,7 +348,7 @@ async function generateSignal(symbol, ctx = {}) {
   else if (compositeNorm >= -60) { action = 'SHORT'; emoji = '📉'; }
   else { action = 'STRONG SHORT'; emoji = '💀'; }
 
-  return {
+  const finalObj = {
     symbol,
     action,
     emoji,
@@ -338,12 +358,26 @@ async function generateSignal(symbol, ctx = {}) {
     composite: parseFloat(compositeNorm.toFixed(2)),
     message: `${action} signal based on ${quote?.source || 'multi-source'} analytics.`
   };
+
+  if (action === 'STRONG LONG' || action === 'STRONG SHORT') {
+    const formattedDate = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+    const tgMsg = `🚨 <b>TRUMPSTER SIGNAL: ${action}</b> 🚨\n\n` +
+      `🦅 <b>Asset:</b> ${symbol}\n` +
+      `💵 <b>Price:</b> $${finalObj.price}\n` +
+      `🔥 <b>Confidence:</b> ${finalObj.confidence}%\n` +
+      `📈 <b>Momentum:</b> ${finalObj.changePct > 0 ? '+' : ''}${finalObj.changePct}%\n\n` +
+      `⏱ ${formattedDate} EST`;
+    triggerTelegramAlert(`sig_${symbol}_${action}`, tgMsg);
+  }
+
+  return finalObj;
 }
 
 // Export for global use in app.js
 window.SignalEngine = {
   generateSignal,
   scoreText,
+  triggerTelegramAlert,
   fetchNewsFromRSS: parseRSS,
   fetchNews: async (symbol = '') => {
     const cKey = `av:news:${symbol || 'global'}`;

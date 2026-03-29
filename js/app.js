@@ -366,6 +366,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (sentiment > 5) bulls++;
                 if (sentiment < -5) bears++;
 
+                // Trigger Telegram on EXTREME news
+                if (sentiment > 10 || sentiment < -10) {
+                    const tag = sentiment > 0 ? 'bullish' : 'bearish';
+                    const emoji = sentiment > 0 ? '🚀' : '🩸';
+                    const tgMsg = `🚨 <b>BREAKING: EXTREME ${tag.toUpperCase()} NEWS</b> ${emoji}\n\n` +
+                                  `📰 <b>Headline:</b> ${item.title}\n` +
+                                  `🔥 <b>Sentiment Score:</b> ${sentiment}\n` +
+                                  `🔗 <a href="${item.link}">Read Full Intel</a>`;
+                    
+                    // Use the article link as the unique ID for the 4-hour cooldown
+                    const msgId = btoa(item.link).slice(0, 15);
+                    if (window.SignalEngine.triggerTelegramAlert) {
+                        window.SignalEngine.triggerTelegramAlert(msgId, tgMsg, true);
+                    }
+                }
+
                 return `
                     <div class="news-item glass-panel">
                         <a href="${item.link}" target="_blank" class="news-title">${item.title}</a>
