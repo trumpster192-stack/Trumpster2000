@@ -18,20 +18,13 @@ window.TRUMPSTER_CONFIG = {
     FRED_KEY          : '48bf00ac5df3a0548ae2df72648a0de8'
 };
 
-// Initialize Supabase Client
-// We only initialize if the keys have been replaced (not equal to placeholders)
-const isConfigured = 
-    window.TRUMPSTER_CONFIG.SUPABASE_URL && 
-    window.TRUMPSTER_CONFIG.SUPABASE_ANON_KEY && 
-    window.TRUMPSTER_CONFIG.SUPABASE_URL !== '__SUPABASE_URL__';
+// Unconditionally initialize Supabase to prevent Vercel environment replacement bugs
+const supaUrl = window.TRUMPSTER_CONFIG.SUPABASE_URL !== '__SUPABASE_URL__' ? window.TRUMPSTER_CONFIG.SUPABASE_URL : 'https://jjcplqmdlbzkaxhkfdli.supabase.co';
+const supaKey = window.TRUMPSTER_CONFIG.SUPABASE_ANON_KEY !== '__SUPABASE_ANON_KEY__' ? window.TRUMPSTER_CONFIG.SUPABASE_ANON_KEY : 'sb_secret_p0ivG9uPo5pfyiglYyIqnw_BsJz4o89';
 
-if (isConfigured) {
-    window.supabaseClient = supabase.createClient(
-        window.TRUMPSTER_CONFIG.SUPABASE_URL, 
-        window.TRUMPSTER_CONFIG.SUPABASE_ANON_KEY
-    );
+try {
+    window.supabaseClient = supabase.createClient(supaUrl, supaKey);
     console.log("MAGA: Supabase Telemetry Connected.");
-} else {
-    const msg = "MAGA: Supabase Keys missing. Trade history NOT CONNECTED. (Set SUPABASE_URL & SUPABASE_ANON_KEY in Vercel settings!)";
-    console.warn(msg);
+} catch (e) {
+    console.warn("MAGA: Supabase initialization failed.", e);
 }

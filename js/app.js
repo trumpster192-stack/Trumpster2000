@@ -192,12 +192,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSignals(signals) {
         signalsFeed.innerHTML = signals.map((sig, i) => {
             const timeAgo = getRelativeTime(new Date()); // Realistic mock for now, or use actual timestamp if available
+            const displayNames = { 'CL=F': 'OIL (USO)', 'GC=F': 'GOLD (GLD)', 'SI=F': 'SILVER', 'HG=F': 'COPPER', 'BTC-USD': 'BITCOIN', 'ETH-USD': 'ETHEREUM' };
+            const displayName = displayNames[sig.symbol] || sig.symbol;
             return `
                 <div class="signal-card glass-panel gold-border slide-up" style="animation-delay: ${i * 0.1}s">
                     <div class="signal-header">
                         <div class="symbol-info">
                             <span class="symbol-box ${sig.action.includes('SHORT') ? 'bg-red' : ''}">${sig.action}</span>
-                            <h3 class="symbol-name">${sig.symbol}</h3>
+                            <h3 class="symbol-name">${displayName}</h3>
                         </div>
                         <div class="price-info">
                             <span class="text-gold" style="font-weight: 900;">$${sig.price}</span>
@@ -234,8 +236,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const heatmap = document.getElementById('heatmap-viz');
         heatmap.innerHTML = signals.map(sig => {
             const type = sig.changePct > 2 ? 'heat-positive' : (sig.changePct < -2 ? 'heat-negative' : 'heat-neutral');
+            const displayNames = { 'CL=F': 'OIL', 'GC=F': 'GOLD', 'SI=F': 'SILVER', 'HG=F': 'COPPER', 'BTC-USD': 'BTC', 'ETH-USD': 'ETH' };
+            const displayName = displayNames[sig.symbol] || sig.symbol;
             return `<div class="heat-cell ${type}">
-                <div class="symbol-label">${sig.symbol}</div>
+                <div class="symbol-label" style="font-weight:900;">${displayName}</div>
                 <div class="price-tag">$${sig.price}</div>
                 <div style="font-size: 0.6rem; margin-top: 2px;">${sig.changePct}%</div>
             </div>`;
@@ -266,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const goldVal = document.getElementById('gold-val');
 
         // Map real results to sidebar telemetry
-        const goldPrice = signals.find(s => s.symbol.includes('GOLD') || s.symbol === 'GLD')?.price;
+        const goldPrice = signals.find(s => s.symbol === 'GC=F' || s.symbol === 'GLD')?.price;
         const btcPrice = signals.find(s => s.symbol.includes('BTC'))?.price;
 
         if (goldVal && goldPrice) goldVal.textContent = goldPrice;
