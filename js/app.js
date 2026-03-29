@@ -15,9 +15,9 @@ const AppState = {
     countdownInterval: null,
     matrixInterval: null,
     rssFeeds: [
-        'https://rss.politico.com/donald-trump.xml',
-        'https://cointelegraph.com/rss',
-        'https://goldbroker.com/news.rss'
+        '/api/news?type=trump',
+        '/api/news?type=crypto',
+        '/api/news?type=gold'
     ],
     currentChartSymbol: 'DJT', // Global scoping fix
     currentChartInterval: 'D'

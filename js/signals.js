@@ -57,9 +57,7 @@ const cache = new Cache();
 
 // ─── Browser Fetch Helpers ─────────────────────────────
 async function fetchJSON(url) {
-  // Use CORS proxy for known external domains that block browser requests
-  const isExternal = url.includes('stlouisfed.org') || url.includes('politico.com') || url.includes('cointelegraph.com') || url.includes('goldbroker.com');
-  const finalUrl = isExternal ? `https://corsproxy.io/?${encodeURIComponent(url)}` : url;
+  const finalUrl = url;
   
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
@@ -75,8 +73,7 @@ async function fetchJSON(url) {
 }
 
 async function fetchText(url) {
-  const isExternal = url.includes('stlouisfed.org') || url.includes('politico.com') || url.includes('cointelegraph.com') || url.includes('goldbroker.com');
-  const finalUrl = isExternal ? `https://corsproxy.io/?${encodeURIComponent(url)}` : url;
+  const finalUrl = url;
 
 
   const controller = new AbortController();
@@ -219,12 +216,11 @@ async function fetchPolygonQuote(symbol) {
 }
 
 async function fetchFredMacro(seriesId = 'FEDFUNDS') {
-  if (!CONFIG.FRED_KEY || CONFIG.FRED_KEY === '__FRED_KEY__') return null;
   const cKey = `fred:macro:${seriesId}`;
   const hit = cache.get(cKey);
   if (hit) return hit;
   
-  const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${CONFIG.FRED_KEY}&file_type=json&sort_order=desc&limit=2`;
+  const url = `/api/fred`;
   try {
     const data = await fetchJSON(url);
     const obs = data.observations || [];
